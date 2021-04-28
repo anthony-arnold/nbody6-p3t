@@ -1,0 +1,7 @@
+      DO 410 I = IFIRST,NTOT
+      V2 = XDOT(1,I)**2+XDOT(2,I)**2+XDOT(3,I)**2
+      IF (V2.GT.50.0) THEN
+      WRITE (6,405) IFIRST, I, NAME(I), V2, BODY(I)
+  405 FORMAT (' BEGIN    I* I NM V2 BOD ',3I6,1P,2E10.2)
+      END IF
+  410 CONTINUE

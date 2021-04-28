@@ -1,0 +1,82 @@
+*
+*       Set zero step to define termination (just in case).
+  250 STEPS(ISUB) = 0.0D0
+      WRITE (6,255)  TNOW, NSTEP1, N, NBH2, ECC, SEMI, RX, ECH,
+     &               GPERT
+  255 FORMAT (' END CHAIN    T # N NBH ECC SEMI RX ECH G ',
+     &                       F10.4,I9,2I4,F9.5,1P,4E10.2)
+*       Distinguish between GR coalescence and standard termination.
+      IF (ICOAL.EQ.0) NBH2 = 0
+      ITERM = -1
+*
+*       Treat different termination cases separately: N = 1, 2 or > 2.
+  258 IF (N.LE.2) THEN
+*       Re-initialize N=1 or N=2 (KS energy contains c.m. & injected body).
+          NBH2 = 0
+          IF (ISTAR(1).EQ.14) NBH2 = 1
+          IF (N.EQ.1) THEN
+              CALL CHTERM(NBH2)
+          ELSE
+              IF (ICOAL.GT.0) NBH2 = NBH2 + 1
+              CALL CHTERM2(NBH2)
+          END IF
+          GO TO 290
+      ELSE
+*
+*       Determine most distant member for removal (R2 allows N > 3).
+          R1 = 1.0/RINV(1)
+          R2 = 1.0/RINV(N-1)
+*       Check beginning and end of the chain.
+          IF (R2.LT.R1) IESC = INAME(1)
+          IF (R1.LT.R2) IESC = INAME(N)
+          RX = MAX(R1,R2)
+*
+*       Adopt 5*RGRAV as criterion to identify IESC since RMIN not available.
+          IF (RX.GT.10.0*RGRAV.AND.GPERT.LT.1.0D-04) THEN
+              XF = 10.0
+*       Delay termination for small external perturbation (< 10000 steps).
+              IF (GPERT.LT.1.0D-07) XF = 20.0
+*       Note that stability condition requires termination (ITERM < 0).
+              IF (RX.LT.XF*RGRAV.AND.NSTEP1.LT.9999.AND.ITERM.EQ.0) THEN
+                  IESC = 0
+                  JESC = 0
+              END IF
+*       Limit termination here to negative energ (note QUIT on ENERGY > 0).
+              IF (ENERGY.LT.-0.000010.AND.
+     &        (RX.LT.5.0*RGRAV.OR.GPERT.LT.1.0D-04)) THEN
+                  IF (ITERM.GE.0) IESC = 0
+              END IF
+*
+*       Check single versus binary escape in four-body case.
+              R2 = 1.0/RINV(2)
+              IF (IESC.GT.0.AND.N.EQ.4.AND.R2.GT.0.5*RSUM) THEN
+                  R1 = 1.0/RINV(1)
+                  R3 = 1.0/RINV(3)
+*       Note four-body stability test still missing.
+                  IF (IESC.EQ.1.AND.R1.LT.3.0*R2) THEN
+                      JESC = 2
+                  ELSE IF (IESC.EQ.4.AND.R3.LT.3.0*R2) THEN
+                      IESC = 3
+                      JESC = 4
+                  END IF
+              END IF
+          END IF
+*
+*       Remove body #IESC > 0 using the standard procedure (repeat for N > 2).
+          IF (IESC.GT.0) CALL REDUCE(IESC,JESC,ISUB)
+          IF (N.GE.2) THEN
+	      IF (N.EQ.2.AND.IPN.GE.2) GO TO 30
+              IF (N.GE.3) THEN
+                  IF (IESC.GT.0) THEN
+                      IF (STEPS(ISUB).EQ.0.0D0) STEPS(ISUB) = 0.5*TSMIN
+                      GO TO 30   ! Note looping on STEPS = 0.
+                  END IF
+                  IESC = 0
+                  JESC = 0
+                  GO TO 30
+              END IF
+          END IF
+      END IF
+*       Terminate chain for two last members and exit after setting IGR = 0.
+      CALL CHTERM2(NBH2)   ! may not be reached but no harm if N=2.
+  290 ISUB = -1
