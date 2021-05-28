@@ -18,12 +18,13 @@
       IF (RS.EQ.0.0D0) THEN
          A0 = 0
       ELSE
-         A0 = BODY**2 / (RS**4)
+         A0 = BODY / (RS**2)
       END IF
-c      A02 = A0**2
+      A02 = A0**2
+*
       TSTEP = SQRT(F2*F3DOT2)+F2DOT2
       IF (TSTEP.NE.0.0D0) THEN
-         TSTEP = (SQRT((F2+A02)*F2DOT2)+FDOT2)/TSTEP
+         TSTEP =  (SQRT(F2+A02)*SQRT(F2DOT2)+FDOT2)/TSTEP
          TSTEP = SQRT(ETA*TSTEP)
       END IF
 *
