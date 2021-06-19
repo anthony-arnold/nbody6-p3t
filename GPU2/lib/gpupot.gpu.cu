@@ -14,6 +14,8 @@
 #define PROFILE
 #endif
 
+extern "C" double double_env(const char*);
+
 namespace pot {
 
 #ifdef PROFILE
@@ -28,6 +30,11 @@ double get_wtime(){
 	return 0.0;
 }
 #endif
+
+   double get_eps() {
+      static double EPS = double_env("EPS");
+      return EPS;
+   }
 
 float2 float2_split(double x){
 	const int shift = 20;
@@ -70,7 +77,7 @@ struct Particle{
 	__device__ Particle() {}
 };
 
-__global__ void pot_kernel(int n, Particle *ptcl, float2 *phi){
+__global__ void pot_kernel(int n, double eps2, Particle *ptcl, float2 *phi){
 	__shared__ Particle jpbuf[NTHREAD];
 	int i = NTHREAD * blockIdx.x + threadIdx.x;
 	Particle ip = ptcl[i];
@@ -86,7 +93,7 @@ __global__ void pot_kernel(int n, Particle *ptcl, float2 *phi){
 			float dx = (jp.pos[0].x - ip.pos[0].x) + (jp.pos[0].y - ip.pos[0].y);
 			float dy = (jp.pos[1].x - ip.pos[1].x) + (jp.pos[1].y - ip.pos[1].y);
 			float dz = (jp.pos[2].x - ip.pos[2].x) + (jp.pos[2].y - ip.pos[2].y);
-			float r2 = dx*dx + dy*dy + dz*dz;
+			float r2 = dx*dx + dy*dy + dz*dz + eps2;
 			if(r2>0.f) {
                             float pij = jp.mass * rsqrtf(r2);
                             phii = float2_accum(phii, pij);
@@ -142,8 +149,9 @@ void gpupot(
 	dim3 grid(ng/NTHREAD, 1, 1);
 	dim3 threads(NTHREAD, 1, 1);
 	int sharedMemSize = NTHREAD * sizeof(Particle);
+        double eps2 = get_eps() * get_eps();
 	// pot_kernel <<<grid, threads, sharedMemSize >>> (n, ptcl_d, phi_d);
-	pot_kernel <<<grid, threads, sharedMemSize >>> (n, ptcl, phi);
+	pot_kernel <<<grid, threads, sharedMemSize >>> (n, eps2, ptcl, phi);
 
 	// cudaMemcpy(phi_h, phi_d, n * sizeof(float2), cudaMemcpyDeviceToHost);
 	phi.dtoh(n);

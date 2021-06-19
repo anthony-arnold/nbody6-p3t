@@ -84,6 +84,7 @@ set(CUDA_OPTIONS
   -std=c++11)
 
 cuda_add_library(pot STATIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/lib/double_env.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/lib/gpupot.gpu.cu OPTIONS ${CUDA_OPTIONS})
 target_include_directories(pot PUBLIC
   ${CUDA_TOOLKIT_ROOT_DIR}/samples/common/inc
@@ -105,6 +106,7 @@ add_library(irr_tree STATIC ${CMAKE_CURRENT_SOURCE_DIR}/irrlib/gpuirr.tree.avx.c
 add_library(irr_avx STATIC ${CMAKE_CURRENT_SOURCE_DIR}/irrlib/gpuirr.avx.cpp)
 
 set(SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/lib/double_env.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/lib/stopwatch.c
   ${CMAKE_CURRENT_SOURCE_DIR}/start.f
   ${CMAKE_CURRENT_SOURCE_DIR}/energy2.f

@@ -20,6 +20,8 @@
 
 #define PROFILE 1
 
+extern "C" double double_env(const char* name);
+
 // Bonsai static data
 bool ENABLE_RUNTIME_LOG;
 bool PREPEND_RANK;
@@ -98,20 +100,6 @@ private:
     std::shared_ptr<my_dev::dev_stream> copy_stream_;
 
 };
-
-double double_env(const char* name) {
-    double d = 0.0;
-    const char* val = getenv(name);
-    if (val) {
-        std::istringstream ss(val);
-        ss >> d;
-        if (ss.fail()) {
-            std::cerr << "WARNING: " << name << " \"" << val << "\" is invalid." << std::endl;
-            d = 0.0;
-        }
-    }
-    return d;
-}
 
 void copy_to_bonsai(
     int ni,
