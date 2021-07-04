@@ -108,7 +108,6 @@ add_library(irr_avx STATIC ${CMAKE_CURRENT_SOURCE_DIR}/irrlib/gpuirr.avx.cpp)
 set(SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/lib/double_env.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/lib/stopwatch.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/start.f
   ${CMAKE_CURRENT_SOURCE_DIR}/energy2.f
   ${CMAKE_CURRENT_SOURCE_DIR}/phicor.f
   ${CMAKE_CURRENT_SOURCE_DIR}/checkl2.f
@@ -264,10 +263,9 @@ endforeach()
 
 add_subdirectory(lib/Bonsai)
 add_executable(nbody7.tree
-  #${CMAKE_CURRENT_SOURCE_DIR}/lib/cdenslcl.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/start.f
   ${CMAKE_CURRENT_SOURCE_DIR}/lib/knn.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/core.tree.f
-  #${CMAKE_CURRENT_SOURCE_DIR}/../Ncode/core.f
   ${CMAKE_CURRENT_SOURCE_DIR}/mydump.tree.f
   ${CMAKE_CURRENT_SOURCE_DIR}/fpoly0.tree.f
   ${CMAKE_CURRENT_SOURCE_DIR}/intgrt.tree.f
@@ -324,10 +322,46 @@ add_executable(nbody7.tree
   #${CMAKE_CURRENT_SOURCE_DIR}/lib/cnbint.tree.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/lib/cnbint.cpp
   )
+add_executable(nbody7.leapfrog
+  ${CMAKE_CURRENT_SOURCE_DIR}/fpoly0.leapfrog.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/start.leapfrog.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/intgrt.leapfrog.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/lib/knn.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/core.tree.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/mydump.tree.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/adjust.tree.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/steps.tree.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/jpred.tree.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/tstep.tree.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/search.tree.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/output.tree.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/ksinit.tree.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/ksreg.tree.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/ksterm.tree.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/kslist.tree.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/cutoff.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/cutoff0.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/nblist.tree.f
+
+  ${TREE_CHAIN_SOURCES}
+  ${CMAKE_CURRENT_SOURCE_DIR}/xcpred.tree.f
+
+  ${CMAKE_CURRENT_SOURCE_DIR}/tpert.tree.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/ksint.tree.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/jpred2.tree.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/../Ncode/fpert.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/../Ncode/kspoly.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/xvpred.tree.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/resolv.tree.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/kspred.tree.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmfirr.tree.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmfirr2.tree.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/kspert.tree.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/lib/cnbint.cpp
+  )
 
 add_executable(nbody7.gpu
-  #${CMAKE_CURRENT_SOURCE_DIR}/lib/cdenslcl.cpp
-  #${CMAKE_CURRENT_SOURCE_DIR}/core.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/start.f
   ${CMAKE_CURRENT_SOURCE_DIR}/../Ncode/core.f
   ${CMAKE_CURRENT_SOURCE_DIR}/lib/cnbint.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../Ncode/mydump.f
@@ -365,4 +399,5 @@ add_executable(nbody7.gpu
 
 
 target_link_libraries(nbody7.tree nbody gpunb_bonsai pot irr_tree bonsai)
+target_link_libraries(nbody7.leapfrog nbody gpunb_bonsai pot irr_tree bonsai)
 target_link_libraries(nbody7.gpu nbody gpunb_velocity pot irr_avx)
