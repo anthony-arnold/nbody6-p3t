@@ -391,17 +391,17 @@ c      END IF
 *       See whether standard output is due.
       IOUT = 0
       if (kz(47).eq.0) then
-        IF (TIME.GT.TNEXT) THEN
+        IF (TIME.GE.TNEXT) THEN
           TIME = TNEXT
           CALL OUTPUT
-          IOUT = 1 
+          IOUT = 1
 
           IF (KZ(33).GT.1) THEN
               WRITE (6,55)  NOFL(1), NOFL(2), ALPHA, NNB, NNBMAX
           END IF
         END IF
       else
-        IF (TIME*TSTAR.GT.TNEXT) THEN
+        IF (TIME*TSTAR.GE.TNEXT) THEN
           TIME = TNEXT/TSTAR
           CALL OUTPUT
           IOUT = 1
