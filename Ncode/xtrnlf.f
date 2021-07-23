@@ -5,8 +5,8 @@
 *       ----------------------------------
 *
       INCLUDE 'common6.h'
-      COMMON/GALAXY/ GMG,RG(3),VG(3),FG(3),FGD(3),TG,
-     &               OMEGA,DISK,A,B,V02,RL2,GMB,AR,GAM,ZDUM(7)
+      COMMON/GALAXY/ GMG,RG(3),VG(3),FG(3),FGD(3),TG,OMEGA,
+     &       MBULGE,RBULGE,MDISK,SCALEA,SCALEB,MHALO,RHALO,VCIRC
       REAL*8  XI(3),XIDOT(3),FIRR(3),FREG(3),FD(3),FDR(3),
      &        XG(3),XGDOT(3),FM(3),FMD(3),FS(3),FSD(3)
 *
@@ -100,6 +100,24 @@
               FDR(K) = FDR(K) - (XIDOT(K) - 3.0*RRDOT*ZF*XI(K))*FMP
               FDR(K) = FDR(K) - YMDOT*ZF2*XI(K)
    50     CONTINUE
+      END IF
+
+*      Irrgang 2013 Galaxy model 
+      IF (KZ(14).EQ.5.AND.KCASE.GT.0) THEN
+c calculate force due to accelerated coordinate system
+          CALL FORCEIR13(RG,VG,FS,FSD)
+
+c calculate galactic centre force
+          DO 15 K = 1,3
+              XG(K) = RG(K) - XI(K)
+              XGDOT(K) = VG(K) - XIDOT(K)
+   15     CONTINUE
+          CALL FORCEIR13(XG,XGDOT,FM,FMD)
+
+          DO K = 1,3
+            FREG(K) = FREG(K) + (FS(K) - FM(K))
+            FDR(K) = FDR(K) + (FSD(K) - FMD(K))
+          END DO
       END IF
 *
       RETURN

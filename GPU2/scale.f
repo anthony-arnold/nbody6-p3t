@@ -128,7 +128,7 @@
       NCM = NTOT
 *
 *       Skip scaling of masses for unscaled upload or planetesimal disk.
-      IF (KZ(22).GT.2.OR.KZ(22).EQ.-1.OR.KZ(5).EQ.3) GO TO 52
+      IF (KZ(22).EQ.2.OR.KZ(22).EQ.-1.OR.KZ(5).EQ.3) GO TO 52
 *
 *       Scale masses to standard units of <M> = 1/N and set total mass.
       DO 50 I = 1,N

@@ -351,6 +351,7 @@ add_executable(nbody7.leapfrog
   ${CMAKE_CURRENT_SOURCE_DIR}/jpred2.tree.f
   ${CMAKE_CURRENT_SOURCE_DIR}/../Ncode/fpert.f
   ${CMAKE_CURRENT_SOURCE_DIR}/../Ncode/kspoly.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/../Ncode/forceir13.f
   ${CMAKE_CURRENT_SOURCE_DIR}/xvpred.tree.f
   ${CMAKE_CURRENT_SOURCE_DIR}/resolv.tree.f
   ${CMAKE_CURRENT_SOURCE_DIR}/kspred.tree.f

@@ -282,7 +282,7 @@
 *                          >3: output for 2nd innermost BH orbit (unit #49);
 *                          <0: strong three-body events (impact.f, unit #49).
 *      46  Reserved for data analysis project on NBODY6++.
-*      47  Reserved for data analysis project on NBODY6++.
+*      47  Data I/O in 1=physical units , 0=nbody units
 *      48  Three-body stability comparison (Valtonen & Mardling 2008 fort.88).
 *      49  Post-Newtonian perturbations included in KS (dir Block).
 *      50  Not used.

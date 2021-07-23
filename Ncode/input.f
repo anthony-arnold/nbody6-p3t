@@ -41,6 +41,15 @@
 *
 *       Perform a simple validation check on main input parameters.
       CALL VERIFY
+
+      if (kz(47).eq.0) then
+        write (*,'(/a)') 'Data output and TCRIT in N-body units !'
+      else if (kz(47).eq.1) then
+        write (*,'(/a)') 'Data output and TCRIT in physical units !'
+      else
+        write(*,'(/a,a)') 'Data output equally spaced in log T, output',
+     *   ' time and TCRIT in physical units !'
+      end if
 *
       GPRINT(1) = 0.0
       DELTAS = 0.0

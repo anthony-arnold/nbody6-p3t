@@ -5,8 +5,8 @@
 *       --------------------------------
 *
       INCLUDE 'common6.h'
-      COMMON/GALAXY/ GMG,RG(3),VG(3),FG(3),FGD(3),TG,
-     &               OMEGA,DISK,A,B,V02,RL2,GMB,AR,GAM,ZDUM(7)
+      COMMON/GALAXY/ GMG,RG(3),VG(3),FG(3),FGD(3),TG,OMEGA,
+     &       MBULGE,RBULGE,MDISK,SCALEA,SCALEB,MHALO,RHALO,VCIRC
       REAL*8  FM(3),FD(3),FS(3),FSD(3)
 *
 *
@@ -17,6 +17,9 @@
       DT3 = ONE3*DT
       RG2 = 0.0
       RGVG = 0.0
+      write (*,*) "bef",(time+toff)*tstar,-rg(1)*rbar,-rg(2)*rbar,
+     *   -rg(3)*rbar
+
       DO 10 K = 1,3
           RG(K) = ((FGD(K)*DT3 + FG(K))*DT2 + VG(K))*DT + RG(K)
           VG(K) = (FGD(K)*DT2 + FG(K))*DT + VG(K)
@@ -34,6 +37,7 @@
    15     CONTINUE
       END IF
 *
+      if (kz(14).eq.999) then 
 *       Check bulge force.
       IF (GMB.GT.0.0D0) THEN
           CALL FBULGE(RG,VG,FS,FSD)
@@ -59,6 +63,11 @@
               FM(K) = FM(K) + FS(K)
               FD(K) = FD(K) + FSD(K)
    30     CONTINUE
+      END IF
+      end if
+
+      IF (KZ(14).EQ.5) THEN
+          call forceir13 (rg, vg, fm, fd)
       END IF
 *
 *       Set time factors for corrector.
@@ -90,3 +99,8 @@
       RETURN
 *
       END
+
+c Check for end condition
+      IF (KZ(14).EQ.5.and.(time+toff)*tstar-tcrit.gt.-30.d0) THEN
+          call checkend (rg, vg)
+      END IF
