@@ -74,11 +74,9 @@
       RNSTEPI = RNSTEPI + NN
 *
 * Update galaxy guiding centre
-      write (*,*) "bef gcint"
       IF (KZ(14).GT.1) THEN
          CALL GCINT
       END IF
-      write (*,*) "n gcint"
 
 *     New forces
       CALL GPUNB_REGF(NN,BODY(IFIRST),

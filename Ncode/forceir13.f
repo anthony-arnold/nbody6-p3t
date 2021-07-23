@@ -1,14 +1,14 @@
-      subroutine forceir13 (rp, vp, fp, fdp) 
-c 
+      subroutine forceir13 (rp, vp, fp, fdp)
+c
 c calculates force and 1st derivative for a particle moving
 c in the galactic model of Irrgang et al. (2013), Table 1
-c units: physical units 
+c units: physical units
 c
 c     implicit none
       include "common6.h"
       real*8 rp(3), vp(3), ru(3), vu(3), fp(3), fdp(3)
       real*8 m1,b1,m2,a2,b2,m3,a3, rv, xd3, xd5
-      parameter (m1=9.5E9 , b1=230.0, m2 = 6.6E10, a2 = 4220.0, 
+      parameter (m1=9.5E9 , b1=230.0, m2 = 6.6E10, a2 = 4220.0,
      *   b2 = 292.0, m3=2.335E10, a3=2562.0)
       real*8 f1(3),f2(3),f3(3),fd1(3),fd2(3),fd3(3)
       real*8 r,xc1,xc2,xc3
@@ -42,7 +42,7 @@ c bulge
 c disc
       xc1=sqrt(ru(1)**2+ru(2)**2+(a2+sqrt(ru(3)**2+b2**2))**2)
       xc2 = a2+sqrt(ru(3)**2+b2**2)
-      xc3 = sqrt(ru(3)**2+b2**2) 
+      xc3 = sqrt(ru(3)**2+b2**2)
       f2(1) = -m2*ru(1)/xc1**3
       f2(2) = -m2*ru(2)/xc1**3
       f2(3) = -m2*ru(3)/xc1**3/
@@ -90,7 +90,7 @@ c halo
 
       subroutine orb_energchk_irr13(rp, vp)
 c
-c calculates energy and angular momentum of a particle moving 
+c calculates energy and angular momentum of a particle moving
 c in the galactic model of Irrgang et al. (2013), Table 1
 c units: pc, pc/myr
 c
@@ -119,7 +119,7 @@ c
       phi(2) = -m2/sqrt(ru(1)**2+ru(2)**2+(a2+
      *      sqrt(ru(3)**2+b2**2))**2)
 
-      phi(3) = m3/a3*log(1.0+rgal/a3) 
+      phi(3) = m3/a3*log(1.0+rgal/a3)
       etot = G*(phi(1)+phi(2)+phi(3))+0.5d0*vg**2
 
       lx = ru(2)*vu(3)-ru(3)*vu(2)
@@ -144,10 +144,9 @@ c
      *    (etot-e0_orb)/v0_orb**2, ' Delta L = ',lde
 
       return
-      end 
+      end
 
-
-     subroutine checkend (rp, vp)
+      subroutine checkend (rp, vp)
       include "common6.h"
       real*8 rp(3), vp(3), ru(3), vu(3), dis, vr
 

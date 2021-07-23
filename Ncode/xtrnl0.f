@@ -10,7 +10,8 @@
 *
 *
       IF (KZ(14).EQ.5) THEN
-          READ (5,*) (RG(K),K=1,3),(VG(K),K=1,3)
+         READ (5,*) (RG(K),K=1,3),(VG(K),K=1,3)
+         READ (5,*) (RFIN(K),K=1,3)
 *
 *       Convert from pc and km/sec to N-body units.
           DO K = 1,3

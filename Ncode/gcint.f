@@ -17,7 +17,7 @@
       DT3 = ONE3*DT
       RG2 = 0.0
       RGVG = 0.0
-      write (*,*) "bef",(time+toff)*tstar,-rg(1)*rbar,-rg(2)*rbar,
+      write (*,*) "GC",(time+toff)*tstar,-rg(1)*rbar,-rg(2)*rbar,
      *   -rg(3)*rbar
 
       DO 10 K = 1,3
@@ -37,7 +37,7 @@
    15     CONTINUE
       END IF
 *
-      if (kz(14).eq.999) then 
+      if (kz(14).eq.999) then
 *       Check bulge force.
       IF (GMB.GT.0.0D0) THEN
           CALL FBULGE(RG,VG,FS,FSD)
@@ -72,7 +72,7 @@
 *
 *       Set time factors for corrector.
       DT13 = ONE3*DT
-      DTSQ12 = ONE12*DT**2  
+      DTSQ12 = ONE12*DT**2
       TG = TG + DT
 *
 *       Include the Hermite corrector and update F & FDOT.
@@ -95,12 +95,12 @@
       OMEGA2 = OM3**2
       OMEGA = SQRT(OMEGA2)
       TIDAL(4) = 2.0*OMEGA
-*
-      RETURN
-*
-      END
 
 c Check for end condition
       IF (KZ(14).EQ.5.and.(time+toff)*tstar-tcrit.gt.-30.d0) THEN
           call checkend (rg, vg)
       END IF
+*
+      RETURN
+*
+      END

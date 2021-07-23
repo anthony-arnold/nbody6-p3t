@@ -48,7 +48,7 @@ if (MCMODEL)
   set (COMPILER_FLAGS
     "${COMPILER_FLAGS} -mcmodel=${MCMODEL}")
 endif()
-ADD_DEFINITIONS(-DHUGE=1.0e20 -DWITH_CUDA5 -D_FORCE_INLINES)
+ADD_DEFINITIONS(-DHUGE=1.0e20 -DWITH_CUDA5 -D_FORCE_INLINES -DCUB_IGNORE_DEPRECATED_CPP_DIALECT)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-reorder")
 
@@ -76,31 +76,36 @@ if (PROFILER)
 endif()
 
 set(CUDA_OPTIONS
-  -gencode arch=compute_35,code=sm_35
-  -gencode arch=compute_35,code=compute_35
-  -gencode arch=compute_50,code=compute_50
-  -gencode arch=compute_50,code=sm_50
-  -ftz=true -lineinfo
-  -std=c++11)
+    -arch=sm_50
+    -gencode=arch=compute_50,code=sm_50
+    -gencode=arch=compute_52,code=sm_52
+    -gencode=arch=compute_60,code=sm_60
+    -gencode=arch=compute_61,code=sm_61
+    -gencode=arch=compute_70,code=sm_70
+    -gencode=arch=compute_75,code=sm_75
+    -gencode=arch=compute_75,code=compute_75
+    -ftz=true -lineinfo
+    -std=c++11)
+
+set(CUDA_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+if (EXISTS ${CUDA_TOOLKIT_ROOT_DIR}/samples/common/inc)
+  list(APPEND CUDA_INCLUDES ${CUDA_TOOLKIT_ROOT_DIR}/samples/common/inc)
+endif()
 
 cuda_add_library(pot STATIC
   ${CMAKE_CURRENT_SOURCE_DIR}/lib/double_env.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/lib/gpupot.gpu.cu OPTIONS ${CUDA_OPTIONS})
-target_include_directories(pot PUBLIC
-  ${CUDA_TOOLKIT_ROOT_DIR}/samples/common/inc
-  ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+target_include_directories(pot PUBLIC ${CUDA_INCLUDES})
 
 add_library(gpunb_bonsai STATIC
   ${CMAKE_CURRENT_SOURCE_DIR}/lib/gpunb.bonsai.cpp)
 target_include_directories(gpunb_bonsai PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}/lib
+  ${CUDA_INCLUDES}
   ${CMAKE_CURRENT_SOURCE_DIR}/lib/Bonsai/include)
 
 cuda_add_library(gpunb_velocity
   ${CMAKE_CURRENT_SOURCE_DIR}/lib/gpunb.velocity.cu OPTIONS ${CUDA_OPTIONS})
-target_include_directories(gpunb_velocity PUBLIC
-  ${CUDA_TOOLKIT_ROOT_DIR}/samples/common/inc
-  ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+target_include_directories(gpunb_velocity PUBLIC ${CUDA_INCLUDES})
 
 add_library(irr_tree STATIC ${CMAKE_CURRENT_SOURCE_DIR}/irrlib/gpuirr.tree.avx.cpp)
 add_library(irr_avx STATIC ${CMAKE_CURRENT_SOURCE_DIR}/irrlib/gpuirr.avx.cpp)
@@ -134,7 +139,7 @@ SET(KS_SOURCES
   delay.f;dgcore.f;dtchck.f;eccmod.f;ecirc.f;edot.f;efac2.f;
   efac3.f;expel.f;energy.f;escape.f;events.f;evolve.f;expand.f;
   fbulge.f;fclose.f;fcloud.f;fcorr.f;fdisk.f;fhalo.f;ficorr.f;findj.f;
-  findm.f;flyby.f;fnuc.f;fpcorr.f;fpoly1.f;fpoly2.f;
+  findm.f;flyby.f;fnuc.f;forceir13.f;fpcorr.f;fpoly1.f;fpoly2.f;
   freeze.f;gcinit.f;gcint.f;giant.f;giant3.f;gntage.f;grrad.f;
   hcorr.f;hiarch.f;hicirc.f;hidat.f;higrow.f;himax.f;himax2.f;
   himod.f;hipop.f;hirect.f;histab.f;hivel.f;hmdot.f;hmdot2.f;
@@ -351,7 +356,6 @@ add_executable(nbody7.leapfrog
   ${CMAKE_CURRENT_SOURCE_DIR}/jpred2.tree.f
   ${CMAKE_CURRENT_SOURCE_DIR}/../Ncode/fpert.f
   ${CMAKE_CURRENT_SOURCE_DIR}/../Ncode/kspoly.f
-  ${CMAKE_CURRENT_SOURCE_DIR}/../Ncode/forceir13.f
   ${CMAKE_CURRENT_SOURCE_DIR}/xvpred.tree.f
   ${CMAKE_CURRENT_SOURCE_DIR}/resolv.tree.f
   ${CMAKE_CURRENT_SOURCE_DIR}/kspred.tree.f
