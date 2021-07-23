@@ -7,11 +7,12 @@
       IMPLICIT REAL*8  (A-H,O-Z)
       COMMON/GALAXY/ GMG,RG(3),VG(3),FG(3),FGD(3),TG,OMEGA,
      &       MBULGE,RBULGE,MDISK,SCALEA,SCALEB,MHALO,RHALO,VCIRC
+      REAL*8 GMG,MBULGE,MDISK,MHALO
       REAL*8  XI(3),XIDOT(3),FM(3),FD(3)
 *
 *
 *     Obtain force and first derivative for gamma/eta model (Dehnen 1993).
-*     
+*
 *     phi(r) = -GM/[a(2-g)] * [ 1 - (1+a/r)**(g-2) ]  (g # 2)
 *     phi(r) = -GM/a*ln(1 + a/r)                      (g = 2)
 *
