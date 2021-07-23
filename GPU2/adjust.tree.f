@@ -401,8 +401,8 @@ c      END IF
           END IF
         END IF
       else
-        IF (TIME*TSTAR.GE.TNEXT) THEN
-          TIME = TNEXT/TSTAR
+         IF (TIME*TSTAR.GE.TNEXT) THEN
+c          TIME = TNEXT/TSTAR
           CALL OUTPUT
           IOUT = 1
 
