@@ -16,13 +16,13 @@
       REAL*4 TINTG(2)
       REAL*8   XNEW(3,NMAX),XDNEW(3,NMAX),RCUT(NMAX)
       INTEGER  NXTLST(NMAX),LISTQ(NMAX),NL(20)
-      INTEGER  IRR(NMAX)
+      INTEGER  IRR(NMAX),NXTFIRR(NMAX),IFIRR,NXTISO(NMAX),IISO
       LOGICAL LOOP,LSTEPM,STEPXCOMM
       SAVE IQ,ICALL,NQ,LQ,LOOP,LSTEPM,STEPM,ISAVE,JSAVE,ISTART,TBH
       DATA IQ,ICALL,LQ,LOOP,LSTEPM,STEPM /0,2,11,.TRUE.,.FALSE.,0.03125/
       DATA ISAVE,JSAVE,ISTART /0,0,0/
       SAVE TLISTQ,TMIN,ICOMP0,JCOMP0,NPACT,XNEW,XDNEW,RCUT
-      SAVE NXTLST,LISTQ,IRR,ISTAT
+      SAVE NXTLST,LISTQ,IRR,ISTAT,NXTFIRR,NXTISO
 *     SAVE CPRED,CPRED2,CPRED3
 *     DATA CPRED,CPRED2,CPRED3 /0.0D0,0.0D0,0.0D0/
 *
@@ -384,17 +384,7 @@ c      END IF
          END DO
          NFR = 0
       END IF
-c      NFR = 0
-c      DO 28 L = 1,NXTLEN
-c          J = NXTLST(L)
-c          IF (TNEW(J).GE.T0R(J) + SMAX*4) THEN
-c              NFR = NFR + 1
-c              IRR(L) = J
-c          ELSE
-c              IRR(L) = 0
-c          END IF
-c 28    CONTINUE
-*
+c
       CALL GPUIRR_PRED_ALL(IFIRST,NTOT,TIME)
       NNPRED = NNPRED + 1
 *
@@ -410,27 +400,48 @@ c 28    CONTINUE
 *         CALL XCPRED(2)
       END IF
 *
-*       Evaluate all irregular forces & derivatives in the GPUIRR library.
-*     DO 46 II = 1,NXTLEN
-*         I = NXTLST(II)
-*         CALL GPUIRR_FIRR(I,GF(1,II),GFD(1,II))
-*     46 CONTINUE
-c      DO II = 1,NXTLEN
-c         I = NXTLST(II)
-c         IF(RS(I).NE.RS(IFIRST)) THEN
-c            WRITE(*,*) 'CHECK RS', I, RS(I)
-c         END IF
-c      END DO
-      CALL GPUIRR_FIRR_VEC(NXTLEN,NXTLST,GF,GFD,RS)
+*     Isolate the isolated particles
+      IFIRR = 0
+      IISO = 0
+      DO II = 1,NXTLEN
+         I = NXTLST(II)
+         IF (I.GT.N .OR. LIST(1,I).GT.0) THEN
+            IFIRR = IFIRR + 1
+            NXTFIRR(IFIRR) = I
+         ELSE
+            IISO = IISO + 1
+            NXTISO(IISO) = I
+         END IF
+      END DO
 *
+*     Get new irregular forces for non-isolated particles.
+      CALL GPUIRR_FIRR_VEC(IFIRR,NXTFIRR,GF,GFD,RS)
+*
+      CALL STOPWATCH(TBEG)
+*
+*     Drift the isolated particles
+      DO II = 1,IISO
+         I = NXTISO(II)
+         DT = TIME - T0(I)
+         T0(I) = TIME
+         TNEW(I) = STEP(I) + T0(I)
+         DO K = 1,3
+            X0(K,I) = X0(K,I) + DT * X0DOT(K,I)
+            FI(K,I) = 0.0D0
+            FIDOT(K,I) = 0.0D0
+            D0(K,I) = 0.0D0
+            D1(K,I) = 0.0D0
+            D2(K,I) = 0.0D0
+            D3(K,I) = 0.0D0
+         END DO
+      END DO
 *
 *       Choose between standard and parallel irregular integration.
-      CALL STOPWATCH(TBEG)
-      IF (NXTLEN.LE.NPMAX) THEN
+      IF (IFIRR.LE.NPMAX) THEN
 *
 *       Correct the irregular steps sequentially.
-          DO 48 II = 1,NXTLEN
-              I = NXTLST(II)
+          DO 48 II = 1,IFIRR
+              I = NXTFIRR(II)
 *       Advance the irregular step (no copy of X0 to GPUIRR needed here).
               CALL NBINT(I,IKS,IRR(II),GF(1,II),GFD(1,II))
 *             CALL GPUIRR_SET_JP(I,X0(1,I),X0DOT(1,I),FI(1,I),FIDOT(1,I),
@@ -448,10 +459,10 @@ c      END DO
       ELSE
 *       Perform irregular correction in parallel (flag for perturbed binary).
 !$omp parallel do private(I)
-          DO 50 II = 1,NXTLEN
+          DO 50 II = 1,IFIRR
 *       Initialize array for repeated calls to ensure thread-safe procedure.
               ISTAT(II) = -1
-              I = NXTLST(II)
+              I = NXTFIRR(II)
               CALL NBINTP(I,IRR(II),GF(1,II),GFD(1,II),ISTAT(II),
      &                    XNEW(1,II),XDNEW(1,II))
 *       Note that rejected parallel part contains few operations.
@@ -460,16 +471,16 @@ c      END DO
           IPHASE = 0
           IKS = 0
 *       Examine all block members for irregular steps or X0 & X0DOT copy.
-          DO 500 II = 1,NXTLEN
-              I = NXTLST(II)
+          DO 500 II = 1,IFIRR
+              I = NXTFIRR(II)
               IF (ISTAT(II).GT.0) THEN
 *       Correct exceptional irregular steps in serial.
                   CALL NBINT(I,IKS,IRR(II),GF(1,II),GFD(1,II))
               END IF
  500       CONTINUE
 !     $omp parallel do private(I,K)
-           DO II = 1,NXTLEN
-              I = NXTLST(II)
+           DO II = 1,IFIRR
+              I = NXTFIRR(II)
               IF(ISTAT(II).LE.0) THEN
 *       Copy new position and velocity.
                  T0(I) = TIME
@@ -484,7 +495,6 @@ c      END DO
       CALL STOPWATCH(TEND)
       TINTIR = TINTIR + TEND - TBEG
       RNSTEPI = RNSTEPI + NXTLEN
-*
 *
 *       Check regular force updates (NFR members on block-step #NBLCKR).
       IF (NFR.GT.0) THEN

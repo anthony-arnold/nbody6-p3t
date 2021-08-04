@@ -16,14 +16,14 @@
       T0(I) = TIME
       T0R(I) = TIME
 *
-c      IF (NNB.EQ.0) THEN
-c         IF (I.GT.N) THEN
-c            TTMP = SMAX
-c         ELSE
-c            TTMP = SMAX*4
-c         END IF
-c         GO TO 87
-c      END IF
+      IF (NNB.EQ.0) THEN
+         IF (I.GT.N) THEN
+            TTMP = SMAX
+         ELSE
+            TTMP = SMAX*4
+         END IF
+         GO TO 87
+      END IF
       ZFI = FIRR(1)**2 + FIRR(2)**2 + FIRR(3)**2
       ZFID = FD(1)**2 + FD(2)**2 + FD(3)**2
       IF (ZFI.EQ.0.0D0.OR.ZFID.EQ.0.0D0) THEN
