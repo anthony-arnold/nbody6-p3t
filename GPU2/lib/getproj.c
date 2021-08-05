@@ -38,7 +38,7 @@
 #define DECLCL -55.21622
 
 void discard_len(FILE* fd) {
-   static int LEN = sizeof(unsigned long long);
+   static int LEN = 4;
    int i, c;
    for (i=0;i<LEN;i++) {
       if ((c=fgetc(fd))==EOF) {
