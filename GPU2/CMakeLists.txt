@@ -406,3 +406,6 @@ add_executable(nbody7.gpu
 target_link_libraries(nbody7.tree nbody gpunb_bonsai pot irr_tree bonsai)
 target_link_libraries(nbody7.leapfrog nbody gpunb_bonsai pot irr_tree bonsai)
 target_link_libraries(nbody7.gpu nbody gpunb_velocity pot irr_avx)
+
+add_executable(getproj ${CMAKE_CURRENT_SOURCE_DIR}/lib/getproj.c)
+target_link_libraries(getproj m)

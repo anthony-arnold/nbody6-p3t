@@ -87,7 +87,6 @@ c halo
       return
       end
 
-
       subroutine orb_energchk_irr13(rp, vp)
 c
 c calculates energy and angular momentum of a particle moving

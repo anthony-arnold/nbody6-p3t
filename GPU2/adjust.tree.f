@@ -497,7 +497,11 @@ c          TIME = TNEXT/TSTAR
  101  FORMAT (/,' POST-ADJUST:  TIME =',F8.2,' WTIME =',E11.3)
       FLUSH(6)
 
-   70 if (kz(14).eq.5) then
+ 70   if (kz(14).gt.2) then
+         write (*,*) "GC ",(time+toff)*tstar,rg(1)*rbar,
+     &      rg(2)*rbar,rg(3)*rbar
+      end if
+      if (kz(14).eq.5) then
          call orb_energchk_irr13(rg, vg) ! Check galactic center position for IR13 model
       end if
 

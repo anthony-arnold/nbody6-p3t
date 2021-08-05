@@ -17,8 +17,6 @@
       DT3 = ONE3*DT
       RG2 = 0.0
       RGVG = 0.0
-      write (*,*) "GC",(time+toff)*tstar,-rg(1)*rbar,-rg(2)*rbar,
-     *   -rg(3)*rbar
 
       DO 10 K = 1,3
           RG(K) = ((FGD(K)*DT3 + FG(K))*DT2 + VG(K))*DT + RG(K)
