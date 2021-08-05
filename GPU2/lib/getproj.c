@@ -37,6 +37,16 @@
 #define RACLCL 48.06754
 #define DECLCL -55.21622
 
+void discard_len(FILE* fd) {
+   static int LEN = sizeof(unsigned long long);
+   int i, c;
+   for (i=0;i<LEN;i++) {
+      if ((c=fgetc(fd))==EOF) {
+         exit(-1);
+      }
+   }
+}
+
 int cmpmy(double *x1, double *x2) {
  if(*x1<*x2) return(-1);
  return(1);
@@ -279,10 +289,11 @@ void get_cen(int nstar, double *x, double *y, double *z, double *rashift, double
 
 
 void show_data(char *fnameu) {
+   static const int KMAX = 20;
  FILE *dat;
  char fname[200];
- double *bla,tmyr,as[30];
- int i,c,ntot,buf[3];
+ double *bla,tmyr,as[KMAX];
+ int i,c,ntot,nk,buf[4];
 
  bla = malloc(NMAX*sizeof(double));
 
@@ -291,35 +302,33 @@ void show_data(char *fnameu) {
  dat = fopen(fname,"r");
 
  do {
-  for (i=0;i<4;i++) if ((c=fgetc(dat))==EOF) exit(-1);    // Read 1st record length of 1st record
-  fread(buf,4,3,dat);
+    discard_len(dat); // Read 1st record length of 1st record
+  fread(buf,4,4,dat);
   ntot=buf[0];
   if (ntot<1000 || ntot>1E6) {
-     printf("Read failed %i\n",ntot);
+     fprintf(stderr, "Read failed %i\n",ntot);
+     exit(-1);
+  }
+  nk = buf[3];
+  if (nk > KMAX) {
+     fprintf(stderr, "Read failed nk=%i\n",nk);
      exit(-1);
   }
 
- for (i=0;i<8;i++) c=fgetc(dat);   // Read 2nd record length of 1st record and 1st of 2nd
+// Read 2nd record length of 1st record and 1st of 2nd
+  discard_len(dat);
+  discard_len(dat);
 
 // Read data
-  fread(as,8,30,dat);         // Header data
+  fread(as,8,nk,dat);         // Header data
   printf("%lf %i\n",as[9],ntot);
 
   fread(bla,8,ntot,dat);     // Masses
   fread(bla,8,3*ntot,dat);   // Positions
   fread(bla,8,3*ntot,dat);   // Velocities
+  fread(bla,4,ntot,dat);     // Names
 
-   if (as[29]<=0.5) {
-     fread(bla,4,ntot,dat);     // Names
-   } else {
-     fread(bla,8,ntot,dat);      // Potentials
-     fread(bla,4,ntot,dat);     // Names
-     fread(bla,4,ntot,dat);    // Stellar types
-     fread(bla,4,ntot,dat);     // Luminosities
-     fread(bla,4,ntot,dat);     // Radii
-   }
-
-  for (i=0;i<4;i++) c=fgetc(dat);   // Read 2nd record length of 2nd record
+  discard_len(dat); // Read 2nd record length of 2nd record
  } while (1);
 }
 
