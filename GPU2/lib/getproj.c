@@ -321,7 +321,7 @@ void show_data(char *fnameu) {
 
 // Read data
   fread(as,8,nk,dat);         // Header data
-  printf("%lf %i\n",as[9],ntot);
+  printf("%lf %i\n",as[0],ntot);
 
   fread(bla,8,ntot,dat);     // Masses
   fread(bla,8,3*ntot,dat);   // Positions
