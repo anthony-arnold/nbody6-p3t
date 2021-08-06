@@ -337,7 +337,7 @@ void read_data(char *fnameu, char *tsnaps) {
  FILE *dat;
  double tsnap;
  char fname[200];
- int ntot,ntot0=0,buf[3],c,i;
+ int nk,ntot,ntot0=0,buf[4],c,i;
  float *lsev,*rsev;
  int *name;
  double *phi;
@@ -379,8 +379,9 @@ void read_data(char *fnameu, char *tsnaps) {
      printf("No snapshot found for t=%lf !\n",tsnap);
      exit(-1);    // Read 1st record length of 1st record
   }
-  fread(buf,4,3,dat);
+  fread(buf,4,4,dat);
   ntot=buf[0];
+  nk=buf[3];
   if (ntot<1000 || ntot>1E6) {
      printf("Read failed %i\n",ntot);
      exit(-1);
@@ -388,10 +389,12 @@ void read_data(char *fnameu, char *tsnaps) {
 
   if (ntot0==0) ntot0=ntot;
 
- for (i=0;i<8;i++) c=fgetc(dat);   // Read 2nd record length of 1st record and 1st of 2nd
+// Read 2nd record length of 1st record and 1st of 2nd
+  discard_len(dat);
+  discard_len(dat);
 
 // Read data
-    fread(as,8,30,dat);         // Header data
+    fread(as,8,nk,dat);         // Header data
     fread(mass,8,ntot,dat);     // Masses
 
     for (i=0;i<ntot;i++) {
@@ -407,18 +410,11 @@ void read_data(char *fnameu, char *tsnaps) {
        wc[i]=xbuf[2];
     }
 
-    if (as[29]<=0.5) {
-      fread(name,4,ntot,dat);     // Names
-    } else {
-      fread(phi,8,ntot,dat);      // Potentials
-      fread(name,4,ntot,dat);     // Names
-      fread(kstar,4,ntot,dat);    // Stellar types
-      fread(lsev,4,ntot,dat);     // Luminosities
-      fread(rsev,4,ntot,dat);     // Radii
-    }
+    fread(name,4,ntot,dat);     // Names
 
-    for (i=0;i<4;i++) c=fgetc(dat);   // Read 2nd record length of 2nd record
-    tmyr = as[9];
+
+    discard_len(dat);  // Read 2nd record length of 2nd record
+    tmyr = as[0] * as[10];
   } while (fabs(tmyr-tsnap)>0.01);
 
   nstar = ntot-as[1];
@@ -432,17 +428,18 @@ void read_data(char *fnameu, char *tsnaps) {
   dr[0] = as[6];
   dr[1] = as[7];
   dr[2] = as[8];
-  dv[0] = as[26];
-  dv[1] = as[27];
-  dv[2] = as[28];
 
-  rgal[0] = as[20]*rbar;
-  rgal[1] = as[21]*rbar;
-  rgal[2] = as[22]*rbar;
+  //dv[0] = as[26];
+  //dv[1] = as[27];
+  //dv[2] = as[28];
 
-  vgal[0] = as[23]*vstar;
-  vgal[1] = as[24]*vstar;
-  vgal[2] = as[25]*vstar;
+  //rgal[0] = as[20]*rbar;
+  //rgal[1] = as[21]*rbar;
+  //rgal[2] = as[22]*rbar;
+
+  //vgal[0] = as[23]*vstar;
+  //vgal[1] = as[24]*vstar;
+  //vgal[2] = as[25]*vstar;
 
   for (i=0;i<nstar;i++) {
 /*
@@ -461,6 +458,7 @@ void read_data(char *fnameu, char *tsnaps) {
       wc[i] = wc[i]*vstar;
   }
 
+  /*
   for (i=0;i<nstar;i++) {
       x[i] = rgal[0]-xc[i];
       y[i] = rgal[1]-yc[i];
@@ -469,7 +467,7 @@ void read_data(char *fnameu, char *tsnaps) {
       v[i] = vgal[1]-vc[i];
       w[i] = vgal[2]-wc[i];
   }
-
+  */
   for (i=0;i<nstar;i++) {
       xc[i] = xc[i]-dr[0]*rbar;
       yc[i] = yc[i]-dr[1]*rbar;
@@ -479,12 +477,12 @@ void read_data(char *fnameu, char *tsnaps) {
       wc[i] = wc[i]-dv[2]*vstar;
   }
 
-  if (as[29]==0.0) {
+  //if (as[29]==0.0) {
     for (i=0;i<nstar;i++) {
        xx = 1E13*(mass[i])-floor(1E13*mass[i]+1.E-5);
        kstar[i]=floor(100*(xx+0.001));
     }
-  }
+    //}
 
   for (i=0;i<nstar;i++)        // Convert masses to Msun
     mass[i] *= zmbar;
