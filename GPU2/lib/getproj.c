@@ -341,7 +341,7 @@ void read_data(char *fnameu, char *tsnaps) {
  float *lsev,*rsev;
  int *name;
  double *phi;
- double tmyr,as[30];
+ double tmyr,as[128];
  double rbar,zmbar,vstar,dr[3],dv[3];
  double xbuf[3],rgal[3],vgal[3];
  double xx;
@@ -429,27 +429,27 @@ void read_data(char *fnameu, char *tsnaps) {
   dr[1] = as[7];
   dr[2] = as[8];
 
-  //dv[0] = as[26];
-  //dv[1] = as[27];
-  //dv[2] = as[28];
+  dv[0] = as[26];
+  dv[1] = as[27];
+  dv[2] = as[28];
 
-  //rgal[0] = as[20]*rbar;
-  //rgal[1] = as[21]*rbar;
-  //rgal[2] = as[22]*rbar;
+  rgal[0] = as[20]*rbar;
+  rgal[1] = as[21]*rbar;
+  rgal[2] = as[22]*rbar;
 
-  //vgal[0] = as[23]*vstar;
-  //vgal[1] = as[24]*vstar;
-  //vgal[2] = as[25]*vstar;
+  vgal[0] = as[23]*vstar;
+  vgal[1] = as[24]*vstar;
+  vgal[2] = as[25]*vstar;
 
   for (i=0;i<nstar;i++) {
-/*
+
       x[i] = (x[i]-dr[0])*rbar;
       y[i] = (y[i]-dr[1])*rbar;
       z[i] = (z[i]-dr[2])*rbar;
       u[i] = (u[i]-dv[0])*vstar;
       v[i] = (v[i]-dv[1])*vstar;
       w[i] = (w[i]-dv[2])*vstar;
-*/
+
       xc[i] = xc[i]*rbar;
       yc[i] = yc[i]*rbar;
       zc[i] = zc[i]*rbar;
@@ -458,7 +458,7 @@ void read_data(char *fnameu, char *tsnaps) {
       wc[i] = wc[i]*vstar;
   }
 
-  /*
+
   for (i=0;i<nstar;i++) {
       x[i] = rgal[0]-xc[i];
       y[i] = rgal[1]-yc[i];
@@ -467,7 +467,7 @@ void read_data(char *fnameu, char *tsnaps) {
       v[i] = vgal[1]-vc[i];
       w[i] = vgal[2]-wc[i];
   }
-  */
+
   for (i=0;i<nstar;i++) {
       xc[i] = xc[i]-dr[0]*rbar;
       yc[i] = yc[i]-dr[1]*rbar;
@@ -477,12 +477,12 @@ void read_data(char *fnameu, char *tsnaps) {
       wc[i] = wc[i]-dv[2]*vstar;
   }
 
-  //if (as[29]==0.0) {
+  if (as[29]==0.0) {
     for (i=0;i<nstar;i++) {
        xx = 1E13*(mass[i])-floor(1E13*mass[i]+1.E-5);
        kstar[i]=floor(100*(xx+0.001));
     }
-    //}
+  }
 
   for (i=0;i<nstar;i++)        // Convert masses to Msun
     mass[i] *= zmbar;

@@ -15,7 +15,7 @@
      &                TCL,STEPCL,NCL,NEWCL
       COMMON/ECHAIN/  ECH
       REAL*8  X1(3,4),V1(3,4),UI(4),VI(4),XREL2(3),VREL2(3)
-      REAL*8  XS(3,NMAX),VS(3,NMAX),BODYS(NMAX),AS(20)
+      REAL*8  XS(3,NMAX),VS(3,NMAX),BODYS(NMAX),AS(30)
       REAL*8  XJ(3,6),VJ(3,6),BODYJ(6)
       LOGICAL  FIRST,SECOND,THIRD
       SAVE  FIRST,SECOND,THIRD
@@ -307,6 +307,9 @@ c      RSMIN = 100.0
       IF (KZ(3).EQ.0.OR.NPRINT.NE.1) GO TO 100
       IF (KZ(3).GT.2.AND.KZ(3).NE.5) GO TO 99
 *
+      DO K = 1,30
+         AS(K) = 0.0D0
+      END DO
       AS(1) = TTOT
       AS(2) = FLOAT(NPAIRS)
       AS(3) = RBAR
@@ -316,8 +319,8 @@ c      RSMIN = 100.0
       AS(7) = RDENS(1)
       AS(8) = RDENS(2)
       AS(9) = RDENS(3)
-      AS(10) = TTOT/TCR
-      AS(11) = TSTAR
+      AS(10) = TTOT*TSTAR
+      AS(11) = TSCALE
       AS(12) = VSTAR
       AS(13) = RC
       AS(14) = NC
@@ -327,6 +330,22 @@ c      RSMIN = 100.0
       AS(18) = RSCALE
       AS(19) = RSMIN
       AS(20) = DMIN1
+*
+      if (kz(14).gt.1) then
+        do k=1,3
+          AS(20+K) = RG(K)
+          AS(23+K) = VG(K)
+        end do
+      else
+        do k=1,3
+          AS(20+K) = 0.d0
+          AS(23+K) = 0.d0
+        end do
+      end if
+*
+c      AS(27) = dvr(1)
+c      AS(28) = dvr(2)
+c      AS(29) = dvr(3)
 *
 *       Include prediction of unperturbed binaries (except ghosts).
       DO 84 J = 1,NPAIRS
@@ -463,7 +482,7 @@ c      RSMIN = 100.0
           OPEN (UNIT=3,STATUS='NEW',FORM='UNFORMATTED',FILE='OUT3')
           FIRST = .FALSE.
       END IF
-      NK = 20
+      NK = 30
       WRITE (3)  NTOT, MODEL, NRUN, NK
       WRITE (3)  (AS(K),K=1,NK), (BODYS(J),J=1,NTOT),
      &           ((XS(K,J),K=1,3),J=1,NTOT), ((VS(K,J),K=1,3),J=1,NTOT),
