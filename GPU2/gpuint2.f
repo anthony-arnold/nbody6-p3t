@@ -16,12 +16,8 @@
       T0(I) = TIME
       T0R(I) = TIME
 *
-      IF (NNB.EQ.0) THEN
-         IF (I.GT.N) THEN
-            TTMP = SMAX
-         ELSE
-            TTMP = SMAX*4
-         END IF
+      IF (NNB.EQ.0.AND.I.LE.N) THEN
+         TTMP = SMAX*4
          GO TO 87
       END IF
       ZFI = FIRR(1)**2 + FIRR(2)**2 + FIRR(3)**2
@@ -43,20 +39,20 @@ cc         IF (RI2.GT.0.1) TTMP = 0.25*TTMP
 c      END IF
 *
 *     Select discrete value (increased by 2, decreased by 2 or unchanged).
-c      IF (TTMP.GT.2.0*STEP(I)) THEN
-c         IF (DMOD(TIME,2.0*STEP(I)).EQ.0.0D0) THEN
-c              TTMP = MIN(2.0*STEP(I),SMAX)
-c          ELSE
-c              TTMP = STEP(I)
-c          END IF
-c      ELSE IF (TTMP.LT.STEP(I)) THEN
-c          TTMP = 0.5*STEP(I)
-c          IF (TTMP.GT.DT0) THEN
-c              TTMP = 0.5*TTMP
-c          END IF
-c      ELSE
-c          TTMP = STEP(I)
-c     END IF
+       IF (TTMP.GT.2.0*STEP(I)) THEN
+          IF (DMOD(TIME,2.0*STEP(I)).EQ.0.0D0) THEN
+               TTMP = MIN(2.0*STEP(I),SMAX)
+           ELSE
+               TTMP = STEP(I)
+           END IF
+       ELSE IF (TTMP.LT.STEP(I)) THEN
+           TTMP = 0.5*STEP(I)
+           IF (TTMP.GT.DT0) THEN
+               TTMP = 0.5*TTMP
+           END IF
+       ELSE
+           TTMP = STEP(I)
+      END IF
 c      IPOW = LOG(TTMP) / LOG(2.0D0)
 c     TTMP = 2.0D0**(IPOW - 1)
       DT = TTMP
