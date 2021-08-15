@@ -563,19 +563,30 @@ c     RSA = RSNEXT
             END IF
          END DO
          LIST(1,I) = LP - 1
-         CALL GPUIRR_SET_LIST(I, LIST(1,I))
          NXTLST(I - IFIRST + 1) = I
       END DO
-      NXTLEN = NTOT - IFIRST + 1
 !     $omp end parallel do
+*
+      DO I = N+1,NTOT
+*     Add distant perturber for hyberbolic orbit.
+         IF (LIST(1,I).EQ.0) THEN
+            SEMI = -0.5D0*BODY(I)/H(I - N)
+            IF (SEMI.LT.0.0D0) THEN
+               LIST(1,I) = 1
+               LIST(2,I) = N
+            END IF
+         END IF
+      END DO
+!     $omp parallel do
+      DO I = IFIRST,NTOT
+         CALL GPUIRR_SET_LIST(I, LIST(1,I))
+      END DO
+!     $omp end parallel do
+*
+      NXTLEN = NTOT - IFIRST + 1
       CALL STOPWATCH(TEND)
       TINTRE = TINTRE + TEND - TBEG
 *
-c!     $omp parallel do
-c      DO I = IFIRST,NTOT
-c         CALL GPUIRR_FIRR(I,GF(1,I),GFD(1,I),RSA)
-c      END DO
-c     !     $omp end parallel do
       CALL GPUIRR_FIRR_VEC(NXTLEN,NXTLST,GF,GFD,RS)
       CALL STOPWATCH(TBEG)
 !     $omp parallel do
