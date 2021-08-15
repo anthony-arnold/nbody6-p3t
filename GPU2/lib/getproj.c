@@ -289,7 +289,7 @@ void get_cen(int nstar, double *x, double *y, double *z, double *rashift, double
 
 
 void show_data(char *fnameu) {
-   static const int KMAX = 20;
+   static const int KMAX = 30;
  FILE *dat;
  char fname[200];
  double *bla,tmyr,as[KMAX];
