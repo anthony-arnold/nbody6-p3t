@@ -130,6 +130,7 @@ c
          e0_orb=etot
          v0_orb=vg
          l0_orb=lz
+         write(*,*) 'Begin cluster orbit E=', etot, 'L=', lz, 'V=', vg
       end if
 
       if (l0_orb.ne.0.d0) then
