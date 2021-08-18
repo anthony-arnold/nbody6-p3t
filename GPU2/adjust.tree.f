@@ -183,9 +183,9 @@ c     IF (RSMIN.EQ.0.0D0) RSMIN = RS0
       END IF
 *
 *       Check optional sorting of Lagrangian radii & half-mass radius.
-      IF (KZ(7).GT.0) THEN
-          CALL LAGR(RDENS)
-      END IF
+c     IF (KZ(7).GT.1) THEN
+c         CALL LAGR(RDENS)
+c     END IF
 *
 *       Scale average & maximum core density by the mean value.
       RHOD = 4.0*TWOPI*RHOD*RSCALE**3/(3.0*ZMASS)
@@ -314,7 +314,7 @@ c$$$   44     CONTINUE
       END IF
 *       Perform automatic error control (RETURN on restart with KZ(2) > 1).
 c     CALL CHECK(DE)
-      IF (ABS(DE).GT.5.0*QE) GO TO 70
+c     IF (ABS(DE).GT.5.0*QE) GO TO 70
 *     Output current state
       IF (KZ(50).GT.1) THEN
          OPEN(98,action='write',form='formatted',position="rewind")
@@ -492,12 +492,12 @@ c          TIME = TNEXT/TSTAR
           STOP
       END IF
 *
-      CALL STOPWATCH(TEND)
+ 70   CALL STOPWATCH(TEND)
       WRITE (6,101) TIME, TEND
  101  FORMAT (/,' POST-ADJUST:  TIME =',F8.2,' WTIME =',E11.3)
       FLUSH(6)
 
- 70   if (kz(14).gt.2) then
+      if (kz(14).gt.2) then
          write (*,*) "GC ",(time+toff)*tstar,rg(1)*rbar,
      &      rg(2)*rbar,rg(3)*rbar
       end if

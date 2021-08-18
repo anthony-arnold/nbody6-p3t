@@ -61,12 +61,12 @@
       END IF
 *
 *       Check optional sorting of Lagrangian radii & half-mass radius.
-      IF (KZ(7).GT.0) THEN
+ 10   IF (KZ(7).GT.1) THEN
           CALL LAGR(RDENS)
       END IF
 *
 *       Initialize diagnostic variables.
-   10 NP = 0
+      NP = 0
       IUNP = 0
       AMIN = 100.0
       MULT = 0
