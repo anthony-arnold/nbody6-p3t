@@ -27,8 +27,10 @@
       ELSE
 *
 *     Specify new time-step by standard criterion (STEPI version not good).
-         A0 = BODY(I)**2 / ((RS(I)+RBUFF)**4)
-         TTMP = SQRT(ETAI * (ZFI + A0)/ZFID)
+         A0 = 0.1*BODY(I) / ((RS(I)+RBUFF)**2)
+         A02 = A0**2
+c         A0 = BODY(I)**2 / ((RS(I)+RBUFF)**4)
+         TTMP = 0.1*SQRT(ETAI * (ZFI + A02)/ZFID)
       END IF
 c      DT0 = TTMP
 c      IF (I.GT.N.AND.NNB.LT.20) THEN
