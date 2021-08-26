@@ -8,12 +8,19 @@
       COMMON/GALAXY/ GMG,RG(3),VG(3),FG(3),FGD(3),TG,OMEGA,
      &       MBULGE,RBULGE,MDISK,SCALEA,SCALEB,MHALO,RHALO,VCIRC
       REAL*8  FM(3),FD(3),FS(3),FSD(3)
+      REAL*8 DTGC 
+      parameter (DTGC=0.001953125)  ! 1/512
 *
 *
 *       Predict coordinates and velocities to order FDOT.
-      DT = TIME + TOFF - TG
+      if (time+toff.eq.0.d0) then
+        DT = DTGC/32.0
+      ELSE
+        DT = DTGC 
+      END IF
+
 *       Note: integration step may exceed STEPX (depends on block-step).
-      DT2 = 0.5*DT
+ 100  DT2 = 0.5*DT
       DT3 = ONE3*DT
       RG2 = 0.0
       RGVG = 0.0
@@ -93,6 +100,9 @@
       OMEGA2 = OM3**2
       OMEGA = SQRT(OMEGA2)
       TIDAL(4) = 2.0*OMEGA
+
+      tg = tg + dtgc
+      if (tg.lt.time+toff) goto 100
 
 c Check for end condition
       IF (KZ(14).EQ.5.and.(time+toff)*tstar-tcrit.gt.-30.d0) THEN

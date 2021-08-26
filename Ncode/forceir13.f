@@ -96,9 +96,11 @@ c
 c
       include 'common6.h'
       real*8 rp(3), vp(3), phi(3)
-      real*8 m1,b1,m2,a2,b2,m3,a3
+      real*8 m1,b1,m2,a2,b2,m3,a3,G
       parameter (m1=9.5E9 , b1=230.0, m2 = 6.6E10, a2 = 4220.0,
      *   b2 = 292.0, m3=2.335E10, a3=2562.0)
+      parameter (G=0.0043009211)    ! in pc(km/sec)^2/Msun
+c                    == 0.0044985 pc^3/Myr^2/Msun
       real*8 lx,ly,lz,ltot,lde
       real*8 ru(3),vu(3)
 
@@ -138,6 +140,9 @@ c
       else
          lde = lz
       end if
+
+      write (*,*) "bla",e0_orb,v0_orb,l0_orb,etot
+      write (*,*) rbar,vstar
 
       write (*,'(/a,f13.5,a,f12.5,2(a,f14.9))')
      *   'Cluster orbit: Dis= ',rgal,' Vel= ',vg,' Delta E = ',
