@@ -41,10 +41,10 @@
 *
       WRITE(6,*) 'ENERGY ', TIME, ETOT, ZKIN, POT, EBIN, ECH
       FLUSH(6)
-      IF (ABS((ETOT-BE(1))/BE(1)).GE.0.01) THEN
-         WRITE (*,*) 'STOPPING DUE TO LARGE ERROR'
-         STOP
-      END IF
+c      IF (ABS((ETOT-BE(1))/BE(1)).GE.0.01) THEN
+c         WRITE (*,*) 'STOPPING DUE TO LARGE ERROR'
+c         STOP
+c      END IF
 *       Update energies and form the relative error (divide by ZKIN or ETOT).
       BE(2) = BE(3)
       BE(3) = ETOT
