@@ -14,7 +14,7 @@
 *
 *       Predict coordinates and velocities to order FDOT.
       If (KZ(14).EQ.5 .and. time+toff.eq.0.d0) then
-         call forceas91 (rg, vg, fg, fgd)
+         call forceir13 (rg, vg, fg, fgd)
       end if
       DT = DTGC
 
