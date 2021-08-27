@@ -8,16 +8,15 @@
       COMMON/GALAXY/ GMG,RG(3),VG(3),FG(3),FGD(3),TG,OMEGA,
      &       MBULGE,RBULGE,MDISK,SCALEA,SCALEB,MHALO,RHALO,VCIRC
       REAL*8  FM(3),FD(3),FS(3),FSD(3)
-      REAL*8 DTGC 
+      REAL*8 DTGC
       parameter (DTGC=0.001953125)  ! 1/512
 *
 *
 *       Predict coordinates and velocities to order FDOT.
-      if (time+toff.eq.0.d0) then
-        DT = DTGC/32.0
-      ELSE
-        DT = DTGC 
-      END IF
+      If (KZ(14).EQ.5 .and. time+toff.eq.0.d0) then
+         call forceas91 (rg, vg, fg, fgd)
+      end if
+      DT = DTGC
 
 *       Note: integration step may exceed STEPX (depends on block-step).
  100  DT2 = 0.5*DT
