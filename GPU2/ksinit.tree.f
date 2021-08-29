@@ -127,13 +127,15 @@
               RI2 = RI2 + (X(K,ICM) - RDENS(K))**2
  150       CONTINUE
 *
-*       Obtain irregular time-step and check commensurability.
-          A0 = BODY(ICM)**2 / ((RS(ICM)+RBUFF)*0.9)**4
+*     Obtain irregular time-step and check commensurability.
+          A0 = ALPHA0*BODY(ICM) / ((RS(ICM) + RBUFF)**2)
+          A02 = A0**2
           IF (FIRR.EQ.0.0D0.OR.FDIRR.EQ.0.0D0) THEN
              DT = SMAX
           ELSE
-             DT = 0.1*ETAI*SQRT((FIRR+A0)/FDIRR)
+             DT = 0.1*SQRT(ETAI * (FIRR+A02)/FDIRR)
           END IF
+
           IF (NNB.LT.20) THEN
              VI2 = XDOT(1,ICM)**2+XDOT(2,ICM)**2+XDOT(3,ICM)**2
              DT0 = 0.1*RS(ICM)/SQRT(VI2)
