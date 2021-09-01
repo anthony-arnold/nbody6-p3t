@@ -100,7 +100,6 @@
       OMEGA = SQRT(OMEGA2)
       TIDAL(4) = 2.0*OMEGA
 
-      tg = tg + dtgc
       if (tg.lt.time+toff) goto 100
 
 c Check for end condition
