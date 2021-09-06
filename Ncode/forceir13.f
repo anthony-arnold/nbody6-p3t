@@ -170,6 +170,7 @@ c                    == 0.0044985 pc^3/Myr^2/Msun
       if (vrfinold.le.0.d0.and.vr.gt.0.d0) then
              vrfinold=vr
              call output
+             WRITE(*,*) 'Galaxy end'
              stop
       end if
 

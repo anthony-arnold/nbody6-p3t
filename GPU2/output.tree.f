@@ -259,7 +259,7 @@ c      RSMIN = 100.0
       END IF
 *
 *       Exit if error exceeds restart tolerance (TIME < TADJ means no CHECK).
-      IF (ABS(ERROR).GT.5.0*QE.AND.TIME.LT.TADJ) GO TO 100
+c      IF (ABS(ERROR).GT.5.0*QE.AND.TIME.LT.TADJ) GO TO 100
 *
 *       Check optional analysis & output of KS binaries.
       IF (KZ(8).GT.0.AND.NPAIRS.GT.0) THEN
