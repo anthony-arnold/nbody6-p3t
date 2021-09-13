@@ -9,11 +9,11 @@
      &       MBULGE,RBULGE,MDISK,SCALEA,SCALEB,MHALO,RHALO,VCIRC
       REAL*8  FM(3),FD(3),FS(3),FSD(3)
       REAL*8 DTGC
-      parameter (DTGC=0.001953125)  ! 1/512
+      parameter (DTGC=0.0009765625)  ! 1/1024
 *
 *
 *       Predict coordinates and velocities to order FDOT.
-      If (KZ(14).EQ.5 .and. time+toff.eq.0.d0) then
+      If (KZ(14).EQ.5 .and. tg.eq.0.d0) then
          call forceir13 (rg, vg, fg, fgd)
       end if
       DT = DTGC
