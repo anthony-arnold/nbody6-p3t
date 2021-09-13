@@ -34,8 +34,8 @@
 //#define DECLCL -26.74406
 
 //NGC 1261
-#define RACLCL 48.06754
-#define DECLCL -55.21622
+//#define RACLCL 48.06754
+//#define DECLCL -55.21622
 
 void discard_len(FILE* fd) {
    static int LEN = 4;
@@ -203,10 +203,27 @@ int main(int argc, char *argv[]) {
 
 void get_cen(int nstar, double *x, double *y, double *z, double *rashift, double *decshift, int shift) {
   double *rast,*decst,*disij,dens;
+  char *chrac, *chdec;
   double xst,yst,zst,dis,b,l,l2,x1,x2;
   double ramean,decmean,weight;
   int i,j,k,merk;
   double mind;
+  double raclcl;
+  double declcl;
+
+  chrac = getenv("RACLCL");
+  if(!chrac) {
+     fprintf(stderr, "RACLCL not set. Set environment variable.\n");
+     exit(-1);
+  }
+
+  chdec = getenv("DECLCL");
+  if(!chdec) {
+     fprintf(stderr, "DECLCL not set. Set environment variable.\n");
+     exit(-1);
+  }
+  raclcl = atof(chrac);
+  declcl = atof(chdec);
 
   rast  = malloc(nstar*sizeof(double));
   decst = malloc(nstar*sizeof(double));
@@ -277,8 +294,8 @@ void get_cen(int nstar, double *x, double *y, double *z, double *rashift, double
 
   if (shift==1) {
     printf("Shifting to observed center of NGC 3201 !\n");
-    *rashift  = RACLCL-ramean;
-    *decshift = DECLCL-decmean;
+    *rashift  = raclcl-ramean;
+    *decshift = declcl-decmean;
   } else {
     printf("Keeping this center !\n");
     *rashift  = 0.0;
