@@ -16,14 +16,6 @@
       T0(I) = TIME
       T0R(I) = TIME
 *
-c      IF (NNB.EQ.0) THEN
-c         IF (I.GT.N) THEN
-c            TTMP = SMAX
-c         ELSE
-c            TTMP = SMAX*4
-c         END IF
-c         GO TO 87
-c      END IF
       ZFI = FIRR(1)**2 + FIRR(2)**2 + FIRR(3)**2
       ZFID = FD(1)**2 + FD(2)**2 + FD(3)**2
       IF (ZFI.EQ.0.0D0.OR.ZFID.EQ.0.0D0) THEN
@@ -31,8 +23,7 @@ c      END IF
       ELSE
 *
 *     Specify new time-step by standard criterion (STEPI version not good).
-         A0 = BODY(I)**2 / ((RS(I)+RBUFF)**4)
-         TTMP = SQRT(ETAI * (ZFI + A0)/ZFID)
+         TTMP = SQRT(ETAI * ZFI/ZFID)
       END IF
 c      DT0 = TTMP
 c      IF (I.GT.N.AND.NNB.LT.20) THEN

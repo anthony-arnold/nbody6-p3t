@@ -128,11 +128,10 @@
  150       CONTINUE
 *
 *       Obtain irregular time-step and check commensurability.
-          A0 = BODY(ICM)**2 / ((RS(ICM)+RBUFF)*0.9)**4
           IF (FIRR.EQ.0.0D0.OR.FDIRR.EQ.0.0D0) THEN
              DT = SMAX
           ELSE
-             DT = 0.1*ETAI*SQRT((FIRR+A0)/FDIRR)
+             DT = 0.1*ETAI*SQRT(FIRR/FDIRR)
           END IF
           IF (NNB.LT.20) THEN
              VI2 = XDOT(1,ICM)**2+XDOT(2,ICM)**2+XDOT(3,ICM)**2
