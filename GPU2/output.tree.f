@@ -61,7 +61,7 @@ c      END IF
       END IF
 *
 *       Check optional sorting of Lagrangian radii & half-mass radius.
- 10   IF (KZ(7).GT.1) THEN
+ 10   IF (KZ(7).GT.1 .and. TIME*TSTAR.le.1.0e+08) THEN
           CALL LAGR(RDENS)
       END IF
 *
