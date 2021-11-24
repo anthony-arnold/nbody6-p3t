@@ -183,9 +183,9 @@ c     IF (RSMIN.EQ.0.0D0) RSMIN = RS0
       END IF
 *
 *       Check optional sorting of Lagrangian radii & half-mass radius.
-c     IF (KZ(7).GT.1) THEN
-c         CALL LAGR(RDENS)
-c     END IF
+      IF (KZ(7).GT.1) THEN
+          CALL LAGR(RDENS)
+      END IF
 *
 *       Scale average & maximum core density by the mean value.
       RHOD = 4.0*TWOPI*RHOD*RSCALE**3/(3.0*ZMASS)
