@@ -312,7 +312,7 @@ void show_data(char *fnameu) {
  double *bla,tmyr,as[KMAX];
  int i,c,ntot,nk,buf[4];
 
- bla = malloc(NMAX*sizeof(double));
+ bla = malloc(3*NMAX*sizeof(double));
 
  strcpy(fname,fnameu);
  if (strcmp((fnameu+strlen(fnameu)-3),"POS") && strncmp((fnameu+strlen(fnameu)-4),"POS",3)) strcat(fname,".POS");
@@ -322,7 +322,7 @@ void show_data(char *fnameu) {
     discard_len(dat); // Read 1st record length of 1st record
   fread(buf,4,4,dat);
   ntot=buf[0];
-  if (ntot<1000 || ntot>1E6) {
+  if (ntot<1000 || ntot>NMAX) {
      fprintf(stderr, "Read failed %i\n",ntot);
      exit(-1);
   }
@@ -399,7 +399,7 @@ void read_data(char *fnameu, char *tsnaps) {
   fread(buf,4,4,dat);
   ntot=buf[0];
   nk=buf[3];
-  if (ntot<1000 || ntot>1E6) {
+  if (ntot<1000 || ntot>NMAX) {
      printf("Read failed %i\n",ntot);
      exit(-1);
   }
