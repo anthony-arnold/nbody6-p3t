@@ -7,7 +7,7 @@
 
 #define PI 3.1415927
 
-#define NMAX  1400000
+#define NMAX  2100000
 
 #define GND  (90-27.128251)/180.0*PI
 #define GNR  (90+192.859481)/180.0*PI
