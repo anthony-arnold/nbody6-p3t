@@ -343,9 +343,9 @@ c      IF (ABS(ERROR).GT.5.0*QE.AND.TIME.LT.TADJ) GO TO 100
         end do
       end if
 *
-c      AS(27) = dvr(1)
-c      AS(28) = dvr(2)
-c      AS(29) = dvr(3)
+      AS(27) = dvr(1)
+      AS(28) = dvr(2)
+      AS(29) = dvr(3)
 *
 *       Include prediction of unperturbed binaries (except ghosts).
       DO 84 J = 1,NPAIRS
@@ -476,6 +476,12 @@ c      AS(29) = dvr(3)
    97         CONTINUE
    98     CONTINUE
       END IF
+*
+      if (kz(14).eq.0) then
+         call auswert_iso(xs, vs, bodys, gpuphi)
+      else
+        call auswert(xs, vs, bodys, gpuphi)
+      end if
 *
 *       Split into WRITE (3) NTOT & WRITE (3) ..  if disc instead of tape.
       IF (FIRST) THEN
