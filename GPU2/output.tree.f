@@ -477,6 +477,7 @@ c      IF (ABS(ERROR).GT.5.0*QE.AND.TIME.LT.TADJ) GO TO 100
    98     CONTINUE
       END IF
 *
+      call dcen(xs, vs, bodys)
       if (kz(14).eq.0) then
          call auswert_iso(xs, vs, bodys, gpuphi)
       else

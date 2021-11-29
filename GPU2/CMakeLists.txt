@@ -330,6 +330,7 @@ add_executable(nbody7.tree
   ${CMAKE_CURRENT_SOURCE_DIR}/auswert_iso.f
   ${CMAKE_CURRENT_SOURCE_DIR}/sort2.f
   ${CMAKE_CURRENT_SOURCE_DIR}/binlist.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/dcen.f
   )
 add_executable(nbody7.leapfrog
   ${CMAKE_CURRENT_SOURCE_DIR}/fpoly0.leapfrog.f
@@ -371,7 +372,7 @@ add_executable(nbody7.leapfrog
   ${CMAKE_CURRENT_SOURCE_DIR}/auswert_iso.f
   ${CMAKE_CURRENT_SOURCE_DIR}/sort2.f
   ${CMAKE_CURRENT_SOURCE_DIR}/binlist.f
-
+  ${CMAKE_CURRENT_SOURCE_DIR}/dcen.f
   )
 
 add_executable(nbody7.gpu
