@@ -9,7 +9,7 @@
      &       MBULGE,RBULGE,MDISK,SCALEA,SCALEB,MHALO,RHALO,VCIRC
       REAL*8  FM(3),FD(3),FS(3),FSD(3)
       REAL*8 DTGC
-      parameter (DTGC=0.00048828125)  ! 1/2048
+      parameter (DTGC=0.000244140625)  ! 1/4096
 *
 *
 *       Predict coordinates and velocities to order FDOT.
