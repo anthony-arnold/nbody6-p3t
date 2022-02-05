@@ -101,9 +101,40 @@ c      CALL CNBINT(I2,X,XDOT,BODY,NNB2,LIST(2,I1),FP(4),FD(4),RS(I))
           CALL KSRES2(J,J1,J2,RIJ2)
           KDUM = J1
           K = KDUM
- 33       CALL CUTOFF(XI,VI,X(1,K),XDOT(1,K),FP,FD,BODY(K),RS(I))
-          CALL CUTOFF(XI(4),VI(4),X(1,K),XDOT(1,K),FP(4),FD(4),
-     &                BODY(K),RS(I))
+   32     A1 = X(1,K) - XI(1)
+          A2 = X(2,K) - XI(2)
+          A3 = X(3,K) - XI(3)
+          RIJ2 = A1*A1 + A2*A2 + A3*A3
+          V1 = XDOT(1,K) - VI(1)
+          V2 = XDOT(2,K) - VI(2)
+          V3 = XDOT(3,K) - VI(3)
+          A9 = 3.0D0*(A1*V1 + A2*V2 + A3*V3)/RIJ2
+   33     A6 = BODY(K)/(RIJ2*SQRT(RIJ2))
+          FP(1) = FP(1) + A1*A6
+          FP(2) = FP(2) + A2*A6
+          FP(3) = FP(3) + A3*A6
+          FD(1) = FD(1) + (V1 - A1*A9)*A6
+          FD(2) = FD(2) + (V2 - A2*A9)*A6
+          FD(3) = FD(3) + (V3 - A3*A9)*A6
+*       Perturbation on first component.
+*
+          A1 = X(1,K) - XI(4)
+          A2 = X(2,K) - XI(5)
+          A3 = X(3,K) - XI(6)
+          RIJ2 = A1*A1 + A2*A2 + A3*A3
+          A6 = BODY(K)/(RIJ2*SQRT(RIJ2))
+          FP(4) = FP(4) + A1*A6
+          FP(5) = FP(5) + A2*A6
+          FP(6) = FP(6) + A3*A6
+          V1 = XDOT(1,K) - VI(4)
+          V2 = XDOT(2,K) - VI(5)
+          V3 = XDOT(3,K) - VI(6)
+          A9 = 3.0D0*(A1*V1 + A2*V2 + A3*V3)/RIJ2
+          FD(4) = FD(4) + (V1 - A1*A9)*A6
+          FD(5) = FD(5) + (V2 - A2*A9)*A6
+          FD(6) = FD(6) + (V3 - A3*A9)*A6
+*       Perturbation on second component.
+*
 *
           IF (K.EQ.KDUM) THEN
               K = K + 1

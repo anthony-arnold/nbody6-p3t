@@ -151,7 +151,7 @@ SET(KS_SOURCES
   kstide.f;lagr.f;lagr2.f;levels.f;magbrk.f;matrix.f;mdot.f;merge.f;
   merge2.f;mix.f;mloss.f;mlwind.f;modify.f;mrenv.f;mtrace.f;
   nbhist.f;nbint.f;nbpot.f;nbrem.f;nbrest.f;nbsort.f;nbtide.f;
-  newtev.f;nstab.f;ntint.f;offset.f;orbit.f;peri.f;permit.f;
+  newtev.f;nstab.f;offset.f;orbit.f;peri.f;permit.f;
   pfac.f;plpot1.f;poti.f;premsf.f;proto_star.f;qtides.f;ran2.f;reflct.f;
   regint.f;remove.f;rename.f;reset.f;reset2.f;rkint.f;rl.f;roche.f;
   rpmax.f;rpmax2.f;rpmin.f;scale.f;search.f;setup.f;setup2.f;shrink.f;
@@ -270,6 +270,7 @@ add_subdirectory(lib/Bonsai)
 add_executable(nbody7.tree
   ${CMAKE_CURRENT_SOURCE_DIR}/start.f
   ${CMAKE_CURRENT_SOURCE_DIR}/lib/knn.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ntint.tree.f
   ${CMAKE_CURRENT_SOURCE_DIR}/core.tree.f
   ${CMAKE_CURRENT_SOURCE_DIR}/mydump.tree.f
   ${CMAKE_CURRENT_SOURCE_DIR}/fpoly0.tree.f
@@ -336,6 +337,7 @@ add_executable(nbody7.leapfrog
   ${CMAKE_CURRENT_SOURCE_DIR}/fpoly0.leapfrog.f
   ${CMAKE_CURRENT_SOURCE_DIR}/start.leapfrog.f
   ${CMAKE_CURRENT_SOURCE_DIR}/intgrt.leapfrog.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/ntint.tree.f
   ${CMAKE_CURRENT_SOURCE_DIR}/lib/knn.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/core.tree.f
   ${CMAKE_CURRENT_SOURCE_DIR}/mydump.tree.f
@@ -377,6 +379,7 @@ add_executable(nbody7.leapfrog
 
 add_executable(nbody7.gpu
   ${CMAKE_CURRENT_SOURCE_DIR}/start.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/../Ncode/ntint.f
   ${CMAKE_CURRENT_SOURCE_DIR}/../Ncode/core.f
   ${CMAKE_CURRENT_SOURCE_DIR}/lib/cnbint.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../Ncode/mydump.f

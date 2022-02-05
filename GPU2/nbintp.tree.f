@@ -268,7 +268,8 @@ c             WRITE(*,*) I, 'FI=', ZFI, 'FID=', ZFID
 c          END IF
 *
 *       Specify new time-step by standard criterion (STEPI version not good).
-          TTMP = TSTEP(FDUM,FD,D2(1,I),D3(1,I),ETAI,BODY(I),RS(I)+RBUFF)
+          TTMP = TSTEP(FDUM,FD,D2(1,I),D3(1,I),ETAI,BODY(I),
+     &                 RS(I)+RBUFF, ALPHA0)
        END IF
 *
 *     IF (I.GT.N) THEN

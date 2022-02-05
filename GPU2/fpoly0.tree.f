@@ -11,8 +11,11 @@
 *
       TBLCKR = TIME
 *     Read optimal average neighbour number and buffer shell radius
-      READ (5,*) NNBOPT, RBUFF
-      WRITE (*,*) 'NNBOPT, RBUFF, TBLCKR', NNBOPT, RBUFF, TBLCKR
+      READ (5,*) ALPHA0, RBUFF
+      IF (ALPHA0 .eq. 0.0D0) THEN
+         ALPHA0 = 0.1D0
+      END IF
+      WRITE (*,*) 'ALPHA0, RBUFF, TBLCKR', ALPHA0, RBUFF, TBLCKR
 c     RSNEXT = RS0
 *
 *
