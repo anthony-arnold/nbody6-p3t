@@ -269,7 +269,7 @@ c          END IF
 *
 *       Specify new time-step by standard criterion (STEPI version not good).
           TTMP = TSTEP(FDUM,FD,D2(1,I),D3(1,I),ETAI,BODY(I),
-     &                 RS(I)+RBUFF, ALPHA0)
+     &                 RS(I)+RBUFF)
        END IF
 *
 *     IF (I.GT.N) THEN

@@ -25,7 +25,7 @@
 *
 *     Determine irregular and regular steps by the general criterion.
             DT = TSTEP(FDUM,D1(1,I),D2(1,I),D3(1,I),ETAI,
-     &           BODY(I), RS(I)+RBUFF, ALPHA0)
+     &           BODY(I), RS(I)+RBUFF)
          END IF
          DTR = SMAX * 4
 *

@@ -68,7 +68,7 @@
    10 CONTINUE
 *
 *       Specify new time-step by standard criterion.
-      TTMP = TSTEP(FIRR,FD,D2(1,I),D3(1,I),ETAI,RSMIN+RBUFF,ALPHA0)
+      TTMP = TSTEP(FIRR,FD,D2(1,I),D3(1,I),ETAI,RSMIN+RBUFF)
       DT0 = TTMP
       TTIME = T0(I)
 *
