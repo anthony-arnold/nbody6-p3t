@@ -329,7 +329,7 @@ c     &         (FP(K),K=1,6), (FPD(K),K=1,6)
 *
 *       Specify new time-step by standard criterion (STEPI version not good).
           TTMP = TSTEP(FDUM,FD,D2(1,I),D3(1,I),ETAI,BODY(I),
-     &                 RS(I)+RBUFF, ALPHA0)
+     &                 RS(I)+RBUFF)
        END IF
  87    DT0 = TTMP
        IF (I.GT.N.AND.NNB0.LT.20) THEN
