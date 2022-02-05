@@ -8,15 +8,15 @@
       COMMON/BINARY/  CM(4,MMAX),XREL(3,MMAX),VREL(3,MMAX),
      &                HM(MMAX),UM(4,MMAX),UMDOT(4,MMAX),TMDIS(MMAX),
      &                NAMEM(MMAX),NAMEG(MMAX),KSTARM(MMAX),IFLAG(MMAX)
-      COMMON/GALAXY/  GMG,RG(3),VG(3),FG(3),FGD(3),TG,
-     &                OMEGA,DISK,A,B,V02,RL2,GMB,AR,GAM,ZDUM(7)
+      COMMON/GALAXY/ GMG,RG(3),VG(3),FG(3),FGD(3),TG,OMEGA,
+     &       MBULGE,RBULGE,MDISK,SCALEA,SCALEB,MHALO,RHALO,VCIRC
       COMMON/CLOUDS/  XCL(3,MCL),XDOTCL(3,MCL),BODYCL(MCL),RCL2(MCL),
      &                CLM(MCL),CLMDOT(MCL),CLDOT,VCL,SIGMA,RB2,PCL2,
      &                TCL,STEPCL,NCL,NEWCL
       COMMON/ECHAIN/  ECH
       REAL*8  X1(3,4),V1(3,4),UI(4),VI(4),XREL2(3),VREL2(3)
-      REAL*4  XS(3,NMAX),VS(3,NMAX),BODYS(NMAX),AS(20)
-      REAL*4  XJ(3,6),VJ(3,6),BODYJ(6)
+      REAL*8  XS(3,NMAX),VS(3,NMAX),BODYS(NMAX),AS(30)
+      REAL*8  XJ(3,6),VJ(3,6),BODYJ(6)
       LOGICAL  FIRST,SECOND,THIRD
       SAVE  FIRST,SECOND,THIRD
       DATA  FIRST,SECOND ,THIRD/.TRUE.,.TRUE.,.TRUE./
@@ -41,10 +41,10 @@
 *
       WRITE(6,*) 'ENERGY ', TIME, ETOT, ZKIN, POT, EBIN, ECH
       FLUSH(6)
-      IF (ABS((ETOT-BE(1))/BE(1)).GE.0.01) THEN
-         WRITE (*,*) 'STOPPING DUE TO LARGE ERROR'
-         STOP
-      END IF
+c      IF (ABS((ETOT-BE(1))/BE(1)).GE.0.01) THEN
+c         WRITE (*,*) 'STOPPING DUE TO LARGE ERROR'
+c         STOP
+c      END IF
 *       Update energies and form the relative error (divide by ZKIN or ETOT).
       BE(2) = BE(3)
       BE(3) = ETOT
@@ -61,12 +61,12 @@
       END IF
 *
 *       Check optional sorting of Lagrangian radii & half-mass radius.
-      IF (KZ(7).GT.0) THEN
+ 10   IF (KZ(7).GT.1) THEN
           CALL LAGR(RDENS)
       END IF
 *
 *       Initialize diagnostic variables.
-   10 NP = 0
+      NP = 0
       IUNP = 0
       AMIN = 100.0
       MULT = 0
@@ -197,7 +197,7 @@
       END IF
 *
 *       Obtain half-mass radii for two groups (NAME <= NZERO/5 & > NZERO/5).
-      IF (KZ(7).GE.2) THEN
+      IF (KZ(7).GT.2) THEN
           CALL LAGR2(RDENS)
       END IF
 *
@@ -259,7 +259,7 @@ c      RSMIN = 100.0
       END IF
 *
 *       Exit if error exceeds restart tolerance (TIME < TADJ means no CHECK).
-      IF (ABS(ERROR).GT.5.0*QE.AND.TIME.LT.TADJ) GO TO 100
+c      IF (ABS(ERROR).GT.5.0*QE.AND.TIME.LT.TADJ) GO TO 100
 *
 *       Check optional analysis & output of KS binaries.
       IF (KZ(8).GT.0.AND.NPAIRS.GT.0) THEN
@@ -307,6 +307,9 @@ c      RSMIN = 100.0
       IF (KZ(3).EQ.0.OR.NPRINT.NE.1) GO TO 100
       IF (KZ(3).GT.2.AND.KZ(3).NE.5) GO TO 99
 *
+      DO K = 1,30
+         AS(K) = 0.0D0
+      END DO
       AS(1) = TTOT
       AS(2) = FLOAT(NPAIRS)
       AS(3) = RBAR
@@ -316,8 +319,8 @@ c      RSMIN = 100.0
       AS(7) = RDENS(1)
       AS(8) = RDENS(2)
       AS(9) = RDENS(3)
-      AS(10) = TTOT/TCR
-      AS(11) = TSTAR
+      AS(10) = TTOT*TSTAR
+      AS(11) = TSCALE
       AS(12) = VSTAR
       AS(13) = RC
       AS(14) = NC
@@ -327,6 +330,22 @@ c      RSMIN = 100.0
       AS(18) = RSCALE
       AS(19) = RSMIN
       AS(20) = DMIN1
+*
+      if (kz(14).gt.1) then
+        do k=1,3
+          AS(20+K) = RG(K)
+          AS(23+K) = VG(K)
+        end do
+      else
+        do k=1,3
+          AS(20+K) = 0.d0
+          AS(23+K) = 0.d0
+        end do
+      end if
+*
+      AS(27) = dvr(1)
+      AS(28) = dvr(2)
+      AS(29) = dvr(3)
 *
 *       Include prediction of unperturbed binaries (except ghosts).
       DO 84 J = 1,NPAIRS
@@ -458,12 +477,19 @@ c      RSMIN = 100.0
    98     CONTINUE
       END IF
 *
+      call dcen(xs, vs, bodys)
+      if (kz(14).eq.0) then
+         call auswert_iso(xs, vs, bodys, gpuphi)
+      else
+        call auswert(xs, vs, bodys, gpuphi)
+      end if
+*
 *       Split into WRITE (3) NTOT & WRITE (3) ..  if disc instead of tape.
       IF (FIRST) THEN
           OPEN (UNIT=3,STATUS='NEW',FORM='UNFORMATTED',FILE='OUT3')
           FIRST = .FALSE.
       END IF
-      NK = 20
+      NK = 30
       WRITE (3)  NTOT, MODEL, NRUN, NK
       WRITE (3)  (AS(K),K=1,NK), (BODYS(J),J=1,NTOT),
      &           ((XS(K,J),K=1,3),J=1,NTOT), ((VS(K,J),K=1,3),J=1,NTOT),

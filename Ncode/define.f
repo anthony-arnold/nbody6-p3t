@@ -196,9 +196,9 @@
 *                =2: regularized binaries only;
 *                >2: individual bodies (loop from 1 to KZ(6)).
 *       7  Lagrangian radii (>0: RSCALE; =2, 3, 4: output units 6, 7);
-*                >=2: half-mass radii of 50% mass, also 1% heavies, unit 6;
-*                >=2: Lagrangian radii for two mass groups on unit 31 & 32;
-*                >=2: geometric radii for three mass groups on unit 6;
+*                >2: half-mass radii of 50% mass, also 1% heavies, unit 6;
+*                >2: Lagrangian radii for two mass groups on unit 31 & 32;
+*                >2: geometric radii for three mass groups on unit 6;
 *                 =5: density, rms velocity & mean mass on unit 26, 27 & 36;
 *                 =6: pairwise values of mean mass and radii on unit 28.
 *       8  Primordial binaries (=1 & >=3 routine BINPOP; >=3: SWEEP;
@@ -253,7 +253,7 @@
 *                         =4 and #27 = 3: neutron star capture (instar.f).
 *      29  Boundary reflection for hot system (suppressed).
 *      30  Multiple regularization (=1: all; >1: BEGIN/END; >2: each step);
-*                                =-1: CHAIN only; =-2: TRIPLE & QUAD only. 
+*                                =-1: CHAIN only; =-2: TRIPLE & QUAD only.
 *      31  Centre of mass correction after ADJUST (don't use with #23 = 0).
 *      32  Increase output intervals & SMAX based on single particle energy.
 *      33  Histograms at main output (>=1: STEP; =2: STEPR, NBHIST & BINARY).
@@ -282,7 +282,7 @@
 *                          >3: output for 2nd innermost BH orbit (unit #49);
 *                          <0: strong three-body events (impact.f, unit #49).
 *      46  Reserved for data analysis project on NBODY6++.
-*      47  Reserved for data analysis project on NBODY6++.
+*      47  Data I/O in 1=physical units , 0=nbody units
 *      48  Three-body stability comparison (Valtonen & Mardling 2008 fort.88).
 *      49  Post-Newtonian perturbations included in KS (dir Block).
 *      50  Not used.
@@ -293,7 +293,7 @@
 *       KSTART TCOMP (KSTART = 2, 3, 4, 5)
 *
 *       DTADJ DELTAT TADJ TNEXT TCRIT QE J KZ(J) (if > 0 & KSTART = 3 or 5).
-*       
+*
 *       ETAI ETAR ETAU DTMIN RMIN NCRIT (if > 0 & KSTART = 4 or 5).
 *
 *       ---------------------------------------------------------------------

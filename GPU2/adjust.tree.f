@@ -8,6 +8,8 @@
       COMMON/ECHAIN/  ECH
       SAVE  DTOFF
       DATA  DTOFF /100.0D0/
+      COMMON/GALAXY/ GMG,RG(3),VG(3),FG(3),FGD(3),TG,OMEGA,
+     &       MBULGE,RBULGE,MDISK,SCALEA,SCALEB,MHALO,RHALO,VCIRC
       REAL*4 TINTG(2)
 *
       CALL STOPWATCH(TBEG)
@@ -181,7 +183,7 @@ c     IF (RSMIN.EQ.0.0D0) RSMIN = RS0
       END IF
 *
 *       Check optional sorting of Lagrangian radii & half-mass radius.
-      IF (KZ(7).GT.0) THEN
+      IF (KZ(7).GT.1) THEN
           CALL LAGR(RDENS)
       END IF
 *
@@ -311,8 +313,8 @@ c$$$   44     CONTINUE
          CALL FLUSH(6)
       END IF
 *       Perform automatic error control (RETURN on restart with KZ(2) > 1).
-      CALL CHECK(DE)
-      IF (ABS(DE).GT.5.0*QE) GO TO 70
+c     CALL CHECK(DE)
+c     IF (ABS(DE).GT.5.0*QE) GO TO 70
 *     Output current state
       IF (KZ(50).GT.1) THEN
          OPEN(98,action='write',form='formatted',position="rewind")
@@ -388,16 +390,30 @@ c      END IF
 *
 *       See whether standard output is due.
       IOUT = 0
-      IF (TIME.GE.TNEXT) THEN
-         CALL OUTPUT
+      if (kz(47).eq.0) then
+        IF (TIME.GE.TNEXT) THEN
+          TIME = TNEXT
+          CALL OUTPUT
           IOUT = 1
-*       Check optional overflow diagnostics (#33 > 1: current & accumulated).
+
+          IF (KZ(33).GT.1) THEN
+              WRITE (6,55)  NOFL(1), NOFL(2), ALPHA, NNB, NNBMAX
+          END IF
+        END IF
+      else
+         IF (TIME*TSTAR.GE.TNEXT) THEN
+c          TIME = TNEXT/TSTAR
+          CALL OUTPUT
+          IOUT = 1
+
           IF (KZ(33).GT.1) THEN
               WRITE (6,55)  NOFL(1), NOFL(2), ALPHA, NNB, NNBMAX
    55         FORMAT (' #9  OVERFLOWS  ',I5,I9,'   ALPHA =',F6.2,
      &                                 '  <NNB> =',I4,'  NNBMAX =',I4)
           END IF
-      END IF
+        END IF
+      end if
+*
 *
 *       Include optional diagnostics for the hardest binary below ECLOSE.
       IF (KZ(33).GE.2.AND.IOUT.GT.0) THEN
@@ -460,7 +476,8 @@ c      END IF
       END IF
 *
 *       Check termination criteria (TIME > TCRIT, N <= NCRIT & next TADJ).
-      IF (TTOT.GE.TCRIT.OR.N.LE.NCRIT.OR.TTOT+DTADJ.GT.TCRIT) THEN
+      IF (N.LE.NCRIT.OR.(kz(47).eq.0.and.TTOT.GE.TCRIT).OR.
+     *    (kz(47).ne.0.and.ttot*tstar.ge.tcrit)) THEN
 *       Terminate after optional COMMON save.
           WT = WTOT/3600.0
           WRITE (6,65)  TTOT, CPUTOT/60.0, ERRTOT, DETOT, WT
@@ -475,10 +492,19 @@ c      END IF
           STOP
       END IF
 *
-      CALL STOPWATCH(TEND)
+ 70   CALL STOPWATCH(TEND)
       WRITE (6,101) TIME, TEND
  101  FORMAT (/,' POST-ADJUST:  TIME =',F8.2,' WTIME =',E11.3)
       FLUSH(6)
-   70 RETURN
+
+      if (kz(14).gt.2) then
+         write (*,*) "GC ",(time+toff)*tstar,rg(1)*rbar,
+     &      rg(2)*rbar,rg(3)*rbar
+      end if
+      if (kz(14).eq.5) then
+         call orb_energchk_irr13(rg, vg) ! Check galactic center position for IR13 model
+      end if
+
+      RETURN
 *
       END

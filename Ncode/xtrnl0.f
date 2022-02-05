@@ -5,10 +5,35 @@
 *       ------------------------------
 *
       INCLUDE 'common6.h'
-      COMMON/GALAXY/ GMG,RG(3),VG(3),FG(3),FGD(3),TG,
-     &               OMEGA,DISK,A,B,V02,RL2,GMB,AR,GAM,ZDUM(7)
+      COMMON/GALAXY/ GMG,RG(3),VG(3),FG(3),FGD(3),TG,OMEGA,
+     &       MBULGE,RBULGE,MDISK,SCALEA,SCALEB,MHALO,RHALO,VCIRC
 *
 *
+      IF (KZ(14).EQ.5) THEN
+         READ (5,*) (RG(K),K=1,3),(VG(K),K=1,3)
+         READ (5,*) (RFIN(K),K=1,3)
+*
+*       Convert from pc and km/sec to N-body units.
+          DO K = 1,3
+              RG(K) = RG(K)/RBAR
+              VG(K) = VG(K)/VSTAR
+          END DO
+
+          WRITE (6,'(a/)') "Galaxy model: Irrgang (2013) !"
+*
+*       Initialize F & FDOT of reference frame (point-mass galaxy is OK).
+          CALL GCINIT
+*
+c Set tidal radius to large value
+          RTIDE = 1.E5
+          RTIDE0 = RTIDE
+
+          WRITE (6,165)  (RG(K),K=1,3), (VG(K),K=1,3)
+  165     FORMAT ("SCALED ORBIT:    RG =",1P,3E10.2,
+     &                                "  VG = ",3E10.2)
+          goto 200
+      END IF
+
 *       Check option for cluster in circular galactic orbit.
       IF (KZ(14).NE.1) GO TO 20
 *
@@ -279,6 +304,6 @@
      &                  '  TSCALE =',E9.2,'  RTIDE =',0P,F6.2,/)
       END IF
 *
-      RETURN
+ 200  RETURN
 *
       END

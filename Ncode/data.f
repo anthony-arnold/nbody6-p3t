@@ -45,7 +45,7 @@
               ZMASS = ZMASS + BODY(I)
     5     CONTINUE
 *       Include possibility of a new IMF via option #20.
-          IF (KZ(22).GT.2.OR.KZ(22).EQ.-1) GO TO 50
+          IF (KZ(22).GE.2.OR.KZ(22).EQ.-1) GO TO 50
       END IF
 *
 *       Include optional initial conditions on #10 in astrophysical units.

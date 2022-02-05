@@ -55,8 +55,12 @@
       CALL STOPWATCH(TEND)
       TINTRE = TINTRE + TEND - TBEG
 *
+*     Set new time and save block time
+ 1    TIME = TIME + SMAX
+      TTOT = TIME + TOFF
+*
 *     Drift
- 1    CALL STOPWATCH(TBEG)
+      CALL STOPWATCH(TBEG)
 !     $omp parallel do schedule(runtime)
       DO J = IFIRST,NTOT
          DO K=1,3
@@ -66,13 +70,18 @@
 !     $omp end parallel do
 !     $omp parallel do schedule(runtime)
       DO J = IFIRST,NTOT
-         T0(J) = TIME + SMAX
+         T0(J) = TIME
       END DO
 !     $omp end parallel do
       CALL STOPWATCH(TEND)
       TINTIR = TINTRE + TEND - TBEG
       RNSTEPI = RNSTEPI + NN
 *
+* Update galaxy guiding centre
+      IF (KZ(14).GT.1) THEN
+         CALL GCINT
+      END IF
+
 *     New forces
       CALL GPUNB_REGF(NN,BODY(IFIRST),
      &     X0(1,IFIRST),X0DOT(1,IFIRST),
@@ -137,9 +146,6 @@
          END IF
       END DO
       END IF
-*     Set new time and save block time
-      TIME = TIME + SMAX
-      TTOT = TIME + TOFF
 *
 *       Check next adjust time before beginning a new block.
       IF (TIME.GE.TADJ) THEN

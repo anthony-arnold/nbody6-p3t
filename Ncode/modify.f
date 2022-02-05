@@ -11,6 +11,12 @@
 *       Read first, second or both lines (KSTART = 3, 4, 5).
       IF (KSTART.EQ.4) GO TO 10
 *
+      TIMESTAR = TIME
+      TOFFSTAR = TOFF
+      if (kz(47).eq.1) then
+         TIMESTAR = TIME*TSTAR
+         TOFFSTAR = TOFF*TSTAR
+      end if
 *       Read new DTADJ, DELTAT, TADJ, TNEXT, TCRIT, QE & KZ(J) (if > 0).
       READ (5,*)  DTA, DT, TA, TN, TC, QE1, J, K
 *
@@ -30,9 +36,9 @@
       END IF
 *
       IF (TN.LE.0.0) THEN
-          TNEXT = MAX(TNEXT - DELTAT + DT,TIME)
+          TNEXT = MAX(TNEXT - DELTAT + DT,TIMESTAR)
       ELSE
-          TNEXT = MAX(TN-TOFF,TIME)
+          TNEXT = MAX(TN-TOFFSTAR,TIMESTAR)
       END IF
 *
       DTADJ = DTA

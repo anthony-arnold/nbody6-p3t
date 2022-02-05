@@ -5,8 +5,8 @@
 *       -----------------------------------
 *
       INCLUDE 'common6.h'
-      COMMON/GALAXY/ GMG,RG(3),VG(3),FG(3),FGD(3),TG,
-     &               OMEGA,DISK,A,B,V02,RL2,GMB,AR,GAM,ZDUM(7)
+      COMMON/GALAXY/ GMG,RG(3),VG(3),FG(3),FGD(3),TG,OMEGA,
+     &       MBULGE,RBULGE,MDISK,SCALEA,SCALEB,MHALO,RHALO,VCIRC
       REAL*8  FD(3),FDD(3)
 *
 * 
@@ -15,6 +15,11 @@
           RIN2 = 1.0/(RG(1)**2 + RG(2)**2 + RG(3)**2)
           RIN3 = RIN2*SQRT(RIN2)
           RGVG = 3.0*(RG(1)*VG(1) + RG(2)*VG(2) + RG(3)*VG(3))*RIN2
+
+         IF (KZ(14).EQ.5) then
+            CALL FORCEIR13(RG,VG,FG,FGD)
+            GOTO 999
+         END IF
 *     
           DO 1 K = 1,3
               FG(K) = -GMG*RG(K)*RIN3
@@ -55,7 +60,7 @@
       END IF
 *
 *       Initialize the time of GC integration.
-      TG = TIME + TOFF
+ 999  TG = TIME + TOFF
 *
       RETURN
 *

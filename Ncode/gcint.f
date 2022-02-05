@@ -5,18 +5,25 @@
 *       --------------------------------
 *
       INCLUDE 'common6.h'
-      COMMON/GALAXY/ GMG,RG(3),VG(3),FG(3),FGD(3),TG,
-     &               OMEGA,DISK,A,B,V02,RL2,GMB,AR,GAM,ZDUM(7)
+      COMMON/GALAXY/ GMG,RG(3),VG(3),FG(3),FGD(3),TG,OMEGA,
+     &       MBULGE,RBULGE,MDISK,SCALEA,SCALEB,MHALO,RHALO,VCIRC
       REAL*8  FM(3),FD(3),FS(3),FSD(3)
+      REAL*8 DTGC
+      parameter (DTGC=0.000244140625)  ! 1/4096
 *
 *
 *       Predict coordinates and velocities to order FDOT.
-      DT = TIME + TOFF - TG
+      If (KZ(14).EQ.5 .and. tg.eq.0.d0) then
+         call forceir13 (rg, vg, fg, fgd)
+      end if
+      DT = DTGC
+
 *       Note: integration step may exceed STEPX (depends on block-step).
-      DT2 = 0.5*DT
+ 100  DT2 = 0.5*DT
       DT3 = ONE3*DT
       RG2 = 0.0
       RGVG = 0.0
+
       DO 10 K = 1,3
           RG(K) = ((FGD(K)*DT3 + FG(K))*DT2 + VG(K))*DT + RG(K)
           VG(K) = (FGD(K)*DT2 + FG(K))*DT + VG(K)
@@ -34,6 +41,7 @@
    15     CONTINUE
       END IF
 *
+      if (kz(14).eq.999) then
 *       Check bulge force.
       IF (GMB.GT.0.0D0) THEN
           CALL FBULGE(RG,VG,FS,FSD)
@@ -60,10 +68,15 @@
               FD(K) = FD(K) + FSD(K)
    30     CONTINUE
       END IF
+      end if
+
+      IF (KZ(14).EQ.5) THEN
+          call forceir13 (rg, vg, fm, fd)
+      END IF
 *
 *       Set time factors for corrector.
       DT13 = ONE3*DT
-      DTSQ12 = ONE12*DT**2  
+      DTSQ12 = ONE12*DT**2
       TG = TG + DT
 *
 *       Include the Hermite corrector and update F & FDOT.
@@ -86,6 +99,13 @@
       OMEGA2 = OM3**2
       OMEGA = SQRT(OMEGA2)
       TIDAL(4) = 2.0*OMEGA
+
+      if (tg.lt.time+toff) goto 100
+
+c Check for end condition
+      IF (KZ(14).EQ.5.and.(time+toff)*tstar-tcrit.gt.-30.d0) THEN
+          call checkend (rg, vg)
+      END IF
 *
       RETURN
 *

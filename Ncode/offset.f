@@ -24,7 +24,11 @@
 *       Set new global times.
       TIME = TIME - DTOFF
       TADJ = TADJ - DTOFF
-      TNEXT = TNEXT - DTOFF
+      IF (KZ(47).EQ.0) THEN
+         TNEXT = TNEXT - DTOFF
+      ELSE
+         TNEXT = TNEXT - DTOFF*TSTAR
+      END IF
       TPREV = TPREV - DTOFF
       TBLIST = TBLIST - DTOFF
       IF (KZ(19).GT.2) THEN

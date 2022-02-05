@@ -41,9 +41,14 @@ option(USE_CUB
   ON
   )
 
+option(COMPILE_SM70
+  "On to enable SM70 compilation"
+  ON
+  )
+
 option(COMPILE_SM35
   "On to enable SM35 compilation"
-  ON
+  OFF
   )
 
 option(USE_DUST
@@ -139,6 +144,23 @@ set (CUFILES
   CUDAkernels/dev_direct_gravity.cu
   )
 
+if (COMPILE_SM70)
+  set (CUFILES
+    ${CUFILES}
+    CUDAkernels/dev_approximate_gravity_warp_new.cu
+    )
+  add_definitions("-DKEPLER")
+  set(GENCODE
+    -arch=sm_50
+    -gencode=arch=compute_50,code=sm_50
+    -gencode=arch=compute_52,code=sm_52
+    -gencode=arch=compute_60,code=sm_60
+    -gencode=arch=compute_61,code=sm_61
+    -gencode=arch=compute_70,code=sm_70
+    -gencode=arch=compute_75,code=sm_75
+    -gencode=arch=compute_75,code=compute_75
+    -ftz=true -lineinfo)
+else(COMPILE_SM70)
 if (COMPILE_SM35)
   set (CUFILES
     ${CUFILES}
@@ -158,6 +180,7 @@ else (COMPILE_SM35)
 	)
   set(GENCODE -gencode arch=compute_20,code=sm_20 -gencode arch=compute_20,code=compute_20)
 endif (COMPILE_SM35)
+endif (COMPILE_SM70)
 
 set (CUHFILES
   CUDAkernels/support_kernels.cu
