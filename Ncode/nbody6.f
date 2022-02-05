@@ -46,6 +46,7 @@
 *
 *       Read previously saved COMMON variables from tape/disc on unit 1.
           CALL MYDUMP(0,1)
+          CALL OUTPUT
           IF (NDUMP.GE.3) STOP
 *       Safety indicator preventing repeated restarts set in routine CHECK.
           CPU = TCOMP
