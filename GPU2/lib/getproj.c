@@ -37,14 +37,15 @@
 //#define RACLCL 48.06754
 //#define DECLCL -55.21622
 
-void discard_len(FILE* fd) {
+int discard_len(FILE* fd) {
    static int LEN = 4;
    int i, c;
    for (i=0;i<LEN;i++) {
       if ((c=fgetc(fd))==EOF) {
-         exit(-1);
+          return 0;
       }
    }
+   return 1;
 }
 
 int cmpmy(double *x1, double *x2) {
@@ -79,7 +80,10 @@ int main(int argc, char *argv[]) {
    exit(-1);
  }
 
- if (argc==2) show_data(argv[1]);
+ if (argc==2) {
+     show_data(argv[1]);
+     exit(0);
+ }
 
  if (argc==4) shift=1;
 
@@ -318,8 +322,9 @@ void show_data(char *fnameu) {
  if (strcmp((fnameu+strlen(fnameu)-3),"POS") && strncmp((fnameu+strlen(fnameu)-4),"POS",3)) strcat(fname,".POS");
  dat = fopen(fname,"r");
 
- do {
-    discard_len(dat); // Read 1st record length of 1st record
+ while(discard_len(dat)) { // Read 1st record length of 1st record
+
+
   fread(buf,4,4,dat);
   ntot=buf[0];
   if (ntot<1000 || ntot>NMAX) {
@@ -346,7 +351,7 @@ void show_data(char *fnameu) {
   fread(bla,4,ntot,dat);     // Names
 
   discard_len(dat); // Read 2nd record length of 2nd record
- } while (1);
+ } while (!feof(dat));
 }
 
 

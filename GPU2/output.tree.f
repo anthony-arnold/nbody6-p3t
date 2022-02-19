@@ -87,7 +87,8 @@ c      END IF
           AMIN = MIN(AMIN,SEMI)
    25 CONTINUE
 *
-*       Perform time-step & neighbour statistics (NS is # single stars).
+*     Perform time-step & neighbour statistics (NS is # single stars).
+      CALL STOPWATCH(TBEG)
       DTI = 0.0
       DTRI = 0.0
       CNNB = 0.0
@@ -105,6 +106,9 @@ c      END IF
           IF (I.LE.N.AND.BODY(I).GT.0.0D0) NS = NS + 1
           SUM = SUM + BODY(I)**2
    30 CONTINUE
+      CALL STOPWATCH(TEND)
+      TCHK = TEND - TBEG
+      WRITE(*,*) 'TCHK 1', TCHK
       NS = NS - NSUB
 *
 *       Estimate relative cost & effective neighbour number of AC scheme.
@@ -307,6 +311,8 @@ c      IF (ABS(ERROR).GT.5.0*QE.AND.TIME.LT.TADJ) GO TO 100
       IF (KZ(3).EQ.0.OR.NPRINT.NE.1) GO TO 100
       IF (KZ(3).GT.2.AND.KZ(3).NE.5) GO TO 99
 *
+
+      CALL STOPWATCH(TBEG)
       DO K = 1,30
          AS(K) = 0.0D0
       END DO
@@ -347,6 +353,9 @@ c      IF (ABS(ERROR).GT.5.0*QE.AND.TIME.LT.TADJ) GO TO 100
       AS(28) = dvr(2)
       AS(29) = dvr(3)
 *
+      CALL STOPWATCH(TEND)
+      TCHK = TEND - TBEG
+      WRITE(*,*) 'TCHK 2', TCHK
 *       Include prediction of unperturbed binaries (except ghosts).
       DO 84 J = 1,NPAIRS
           IF (LIST(1,2*J-1).EQ.0.AND.BODY(N+J).GT.0.0D0) THEN
@@ -354,6 +363,7 @@ c      IF (ABS(ERROR).GT.5.0*QE.AND.TIME.LT.TADJ) GO TO 100
           END IF
    84 CONTINUE
 *
+      CALL STOPWATCH(TBEG)
 *       Convert masses, coordinates & velocities to single precision.
       DO 90 I = 1,NTOT
           BODYS(I) = BODY(I)
@@ -363,6 +373,9 @@ c      IF (ABS(ERROR).GT.5.0*QE.AND.TIME.LT.TADJ) GO TO 100
    85     CONTINUE
    90 CONTINUE
 *
+      CALL STOPWATCH(TEND)
+      TCHK = TEND - TBEG
+      WRITE(*,*) 'TCHK 3', TCHK
 *       Replace any ghosts by actual M, R & V (including 2 binaries).
       DO 95 JPAIR = 1,NPAIRS
           J2 = 2*JPAIR
@@ -477,13 +490,22 @@ c      IF (ABS(ERROR).GT.5.0*QE.AND.TIME.LT.TADJ) GO TO 100
    98     CONTINUE
       END IF
 *
+      CALL STOPWATCH(TBEG)
       call dcen(xs, vs, bodys)
+      CALL STOPWATCH(TEND)
+      TCHK = TEND - TBEG
+      WRITE(*,*) 'TCHK 4', TCHK
+      CALL STOPWATCH(TBEG)
       if (kz(14).eq.0) then
          call auswert_iso(xs, vs, bodys, gpuphi)
       else
         call auswert(xs, vs, bodys, gpuphi)
       end if
+      CALL STOPWATCH(TEND)
+      TCHK = TEND - TBEG
+      WRITE(*,*) 'TCHK 5', TCHK
 *
+      CALL STOPWATCH(TBEG)
 *       Split into WRITE (3) NTOT & WRITE (3) ..  if disc instead of tape.
       IF (FIRST) THEN
           OPEN (UNIT=3,STATUS='NEW',FORM='UNFORMATTED',FILE='OUT3')
@@ -496,7 +518,11 @@ c      IF (ABS(ERROR).GT.5.0*QE.AND.TIME.LT.TADJ) GO TO 100
      &           (NAME(J),J=1,NTOT)
 *     CLOSE (UNIT=3)
 *
+      CALL STOPWATCH(TEND)
+      TCHK = TEND - TBEG
+      WRITE(*,*) 'TCHK 6', TCHK
 *       Produce output file for tidal tail members.
+      CALL STOPWATCH(TBEG)
    99 IF (KZ(3).LE.3) THEN
           IF (SECOND) THEN
              OPEN (UNIT=33,STATUS='NEW',FORM='UNFORMATTED',FILE='OUT33')
@@ -531,6 +557,9 @@ c      IF (ABS(ERROR).GT.5.0*QE.AND.TIME.LT.TADJ) GO TO 100
       END IF
       END IF
 *
+      CALL STOPWATCH(TEND)
+      TCHK = TEND - TBEG
+      WRITE(*,*) 'TCHK 7', TCHK
 *       Include all stars in same file (KZ(3) > 3; astrophysical units).
       IF (KZ(3).GT.3.AND.NTAIL.GT.0) THEN
           IF (THIRD) THEN
