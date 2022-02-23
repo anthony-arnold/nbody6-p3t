@@ -113,6 +113,7 @@ add_library(irr_avx STATIC ${CMAKE_CURRENT_SOURCE_DIR}/irrlib/gpuirr.avx.cpp)
 set(SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/lib/double_env.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/lib/stopwatch.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/lib/sort.c
   ${CMAKE_CURRENT_SOURCE_DIR}/energy2.f
   ${CMAKE_CURRENT_SOURCE_DIR}/phicor.f
   ${CMAKE_CURRENT_SOURCE_DIR}/checkl2.f

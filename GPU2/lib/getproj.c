@@ -61,7 +61,7 @@ int nstar,*kstar;
 int main(int argc, char *argv[]) {
  int i,k;
  char sgn[2];
- void show_data(),read_data(),get_tform_mat();
+ void show_data(),read_data(),get_tform_mat(),stream_data();
  void invert_tform_mat();
  double parallax,vr,vx,vy,vz,vn,ve;
  double pmra,pmdec;
@@ -82,6 +82,11 @@ int main(int argc, char *argv[]) {
 
  if (argc==2) {
      show_data(argv[1]);
+     exit(0);
+ }
+
+ if (strcmp(argv[2], "stream") == 0) {
+     stream_data(argv[1]);
      exit(0);
  }
 
@@ -360,9 +365,7 @@ void read_data(char *fnameu, char *tsnaps) {
  double tsnap;
  char fname[200];
  int nk,ntot,ntot0=0,buf[4],c,i;
- float *lsev,*rsev;
  int *name;
- double *phi;
  double tmyr,as[128];
  double rbar,zmbar,vstar,dr[3],dv[3];
  double xbuf[3],rgal[3],vgal[3];
@@ -381,10 +384,6 @@ void read_data(char *fnameu, char *tsnaps) {
  kstar=malloc(NMAX*sizeof(int));
 
  mass=malloc(NMAX*sizeof(double));
- phi=malloc(NMAX*sizeof(double));
-
- lsev=malloc(NMAX*sizeof(float));
- rsev=malloc(NMAX*sizeof(float));
 
  strcpy(fname,fnameu);
  if (strcmp((fnameu+strlen(fnameu)-3),"POS") && strncmp((fnameu+strlen(fnameu)-4),"POS",3))  strcat(fname,".POS");
@@ -464,14 +463,6 @@ void read_data(char *fnameu, char *tsnaps) {
   vgal[2] = as[25]*vstar;
 
   for (i=0;i<nstar;i++) {
-
-      x[i] = (x[i]-dr[0])*rbar;
-      y[i] = (y[i]-dr[1])*rbar;
-      z[i] = (z[i]-dr[2])*rbar;
-      u[i] = (u[i]-dv[0])*vstar;
-      v[i] = (v[i]-dv[1])*vstar;
-      w[i] = (w[i]-dv[2])*vstar;
-
       xc[i] = xc[i]*rbar;
       yc[i] = yc[i]*rbar;
       zc[i] = zc[i]*rbar;
@@ -479,7 +470,6 @@ void read_data(char *fnameu, char *tsnaps) {
       vc[i] = vc[i]*vstar;
       wc[i] = wc[i]*vstar;
   }
-
 
   for (i=0;i<nstar;i++) {
       x[i] = rgal[0]-xc[i];
@@ -528,6 +518,173 @@ void read_data(char *fnameu, char *tsnaps) {
  fprintf(dat,"%8.5lf %12.3lf %12.3lf %12.3lf %10.3lf %10.3lf %10.3lf %12.4lf %12.4lf %12.4lf %10.4lf %10.4lf %10.4lf %3i\n",mass[i],x[i],y[i],z[i],u[i],v[i],w[i],xc[i],yc[i],zc[i],uc[i],vc[i],wc[i],kstar[i]);
 
  fclose(dat);
+}
+
+
+void stream_data(char *fnameu) {
+ static const int KMAX = 30;
+ FILE* dat;
+ char fname[200];
+ int nk,ntot,ntot0=0,buf[4],c,i;
+ int *name;
+ int found;
+ double tmyr,tend,as[128];
+ double rbar,zmbar,vstar,dr[3],dv[3];
+ double xbuf[3],rgal[3],vgal[3];
+ double *xc,*yc,*zc,*uc,*vc,*wc,*bla;
+
+ bla = malloc(3*NMAX*sizeof(double));
+
+ xc = malloc(NMAX*sizeof(double));
+ yc = malloc(NMAX*sizeof(double));
+ zc = malloc(NMAX*sizeof(double));
+
+ uc = malloc(NMAX*sizeof(double));
+ vc = malloc(NMAX*sizeof(double));
+ wc = malloc(NMAX*sizeof(double));
+
+ name=malloc(NMAX*sizeof(int));
+
+ mass=malloc(NMAX*sizeof(double));
+
+ strcpy(fname,fnameu);
+ if (strcmp((fnameu+strlen(fnameu)-3),"POS") && strncmp((fnameu+strlen(fnameu)-4),"POS",3))  strcat(fname,".POS");
+
+ if ((dat=fopen(fname,"r"))==NULL) {
+   printf("Opening POS-File Failed !\n");
+   exit(-1);
+ }
+
+ // Find the final time stamp.
+ found = 0;
+ while(discard_len(dat)) { // Read 1st record length of 1st record
+     fread(buf,4,4,dat);
+     ntot=buf[0];
+     if (ntot<1000 || ntot>NMAX) {
+         fprintf(stderr, "Read failed %i\n",ntot);
+         exit(-1);
+     }
+     nk = buf[3];
+     if (nk > KMAX) {
+         fprintf(stderr, "Read failed nk=%i\n",nk);
+         exit(-1);
+     }
+
+     // Read 2nd record length of 1st record and 1st of 2nd
+     discard_len(dat);
+     discard_len(dat);
+
+     // Read data
+     fread(as,8,nk,dat);         // Header data
+     tend = as[0] * as[10];
+
+     fread(bla,8,ntot,dat);     // Masses
+     fread(bla,8,3*ntot,dat);   // Positions
+     fread(bla,8,3*ntot,dat);   // Velocities
+     fread(bla,4,ntot,dat);     // Names
+
+     discard_len(dat); // Read 2nd record length of 2nd record
+ } while (!feof(dat));
+
+ // go back to the start
+ fseek(dat, 0, SEEK_SET);
+
+ for(;;) {
+     for (i=0;i<4;i++) {
+         if ((c=fgetc(dat))==EOF) {
+             return;
+         }
+     }
+
+     fread(buf,4,4,dat);
+     ntot=buf[0];
+     nk=buf[3];
+     if (ntot<1000 || ntot>NMAX) {
+         printf("Read failed %i\n",ntot);
+         exit(-1);
+     }
+
+     if (ntot0==0) ntot0=ntot;
+
+     // Read 2nd record length of 1st record and 1st of 2nd
+     discard_len(dat);
+     discard_len(dat);
+
+     // Read data
+     fread(as,8,nk,dat);         // Header data
+     fread(mass,8,ntot,dat);     // Masses
+
+     for (i=0;i<ntot;i++) {
+         fread(xbuf,8,3,dat);     // Positions
+         xc[i]=xbuf[0];
+         yc[i]=xbuf[1];
+         zc[i]=xbuf[2];
+     }
+     for (i=0;i<ntot;i++) {
+         fread(xbuf,8,3,dat);     // Velocities
+         uc[i]=xbuf[0];
+         vc[i]=xbuf[1];
+         wc[i]=xbuf[2];
+     }
+
+     fread(name,4,ntot,dat);     // Names
+
+     discard_len(dat);  // Read 2nd record length of 2nd record
+     tmyr = as[0] * as[10];
+
+     nstar = ntot-as[1];
+     rbar  = as[2];
+     zmbar = as[3];
+     vstar = as[11];
+
+     dr[0] = as[6];
+     dr[1] = as[7];
+     dr[2] = as[8];
+
+     dv[0] = as[26];
+     dv[1] = as[27];
+     dv[2] = as[28];
+
+     rgal[0] = as[20]*rbar;
+     rgal[1] = as[21]*rbar;
+     rgal[2] = as[22]*rbar;
+
+     vgal[0] = as[23]*vstar;
+     vgal[1] = as[24]*vstar;
+     vgal[2] = as[25]*vstar;
+
+#pragma omp parallel for
+     for (i=0;i<nstar;i++) {
+         xc[i] = xc[i]*rbar;
+         yc[i] = yc[i]*rbar;
+         zc[i] = zc[i]*rbar;
+         uc[i] = uc[i]*vstar;
+         vc[i] = vc[i]*vstar;
+         wc[i] = wc[i]*vstar;
+     }
+
+#pragma omp parallel for
+     for (i=0;i<nstar;i++) {
+         x[i] = rgal[0]-xc[i];
+         y[i] = rgal[1]-yc[i];
+         z[i] = rgal[2]-zc[i];
+         u[i] = vgal[0]-uc[i];
+         v[i] = vgal[1]-vc[i];
+         w[i] = vgal[2]-wc[i];
+     }
+
+#pragma omp parallel for
+     for (i=0;i<nstar;i++) {
+         // Convert masses to Msun
+         mass[i] *= zmbar;
+     }
+
+     printf("T = %5.1lf\n", tmyr - tend);
+
+     for (i=0;i<nstar;i++) {
+         fprintf(stdout,"%8.5lf %12.3lf %12.3lf %12.3lf %12.3lf %12.3lf %12.3lf\n",mass[i],x[i],y[i],z[i],xc[i],yc[i],zc[i]);
+     }
+ }
 }
 
 
