@@ -141,7 +141,7 @@
 *
 *     Accumulate tidal energy change for general galactic potential.
 *     Note: Taylor series at end of interval with negative argument.
-            ETIDE = ETIDE + BODY(I)*(0.5*W2DOT*SMAX - WDOT)*SMAX
+            ETIDE = ETIDE + BODY(J)*(0.5*W2DOT*SMAX - WDOT)*SMAX
 *     Note: integral of Taylor series for V*P using final values.
          END IF
       END DO
@@ -234,6 +234,19 @@
 !     $omp end parallel do
       CALL STOPWATCH(TEND)
       TINTRE = TINTRE + TEND - TBEG
+
+*       Check optional mass loss time at end of block-step.
+      IF (KZ(19).GT.0) THEN
+*       Delay until time commensurate with 100-year step (new polynomials).
+          IF (TIME.GT.TMDOT.AND.DMOD(TIME,STEPX).EQ.0.0D0) THEN
+              IF (KZ(19).GE.3) THEN
+                  CALL MDOT
+              ELSE
+                  CALL MLOSS
+              END IF
+          END IF
+      END IF
+
 *     COPY for adjust
 !     $omp parallel do
  105  DO I = IFIRST,NTOT

@@ -17,6 +17,7 @@
       REAL*8  X1(3,4),V1(3,4),UI(4),VI(4),XREL2(3),VREL2(3)
       REAL*8  XS(3,NMAX),VS(3,NMAX),BODYS(NMAX),AS(30)
       REAL*8  XJ(3,6),VJ(3,6),BODYJ(6)
+      REAL*4 RSEV(NMAX),LSEV(NMAX)
       LOGICAL  FIRST,SECOND,THIRD
       SAVE  FIRST,SECOND,THIRD
       DATA  FIRST,SECOND ,THIRD/.TRUE.,.TRUE.,.TRUE./
@@ -299,8 +300,11 @@ c      IF (ABS(ERROR).GT.5.0*QE.AND.TIME.LT.TADJ) GO TO 100
       END IF
 *
 *       Check optional diagnostics of evolving stars.
-      IF (KZ(12).GT.0.AND.TIME.GE.TPLOT) THEN
-          CALL HRPLOT
+c     IF (KZ(12).GT.0.AND.TIME.GE.TPLOT) THEN
+c         CALL HRPLOT
+c     END IF
+      IF (KZ(19).GT.0) THEN
+          CALL HRPLOT(RSEV, LSEV)
       END IF
 *
 *       Check optional writing of data on unit 3 (frequency NFIX).
@@ -346,6 +350,7 @@ c      IF (ABS(ERROR).GT.5.0*QE.AND.TIME.LT.TADJ) GO TO 100
       AS(27) = dvr(1)
       AS(28) = dvr(2)
       AS(29) = dvr(3)
+      AS(30) = KZ(19)
 *
 *       Include prediction of unperturbed binaries (except ghosts).
       DO 84 J = 1,NPAIRS
@@ -490,10 +495,18 @@ c      IF (ABS(ERROR).GT.5.0*QE.AND.TIME.LT.TADJ) GO TO 100
           FIRST = .FALSE.
       END IF
       NK = 30
-      WRITE (3)  NTOT, MODEL, NRUN, NK
-      WRITE (3)  (AS(K),K=1,NK), (BODYS(J),J=1,NTOT),
+      if (kz(19).eq.0) then
+         WRITE (3)  NTOT, MODEL, NRUN, NK
+         WRITE (3)  (AS(K),K=1,NK), (BODYS(J),J=1,NTOT),
      &           ((XS(K,J),K=1,3),J=1,NTOT), ((VS(K,J),K=1,3),J=1,NTOT),
      &           (NAME(J),J=1,NTOT)
+      else
+         WRITE (3)  NTOT, MODEL, NRUN, NK
+         WRITE (3)  (AS(K),K=1,NK), (BODYS(J),J=1,NTOT),
+     &           ((XS(K,J),K=1,3),J=1,NTOT), ((VS(K,J),K=1,3),J=1,NTOT),
+     &           (NAME(J),J=1,NTOT),(KSTAR(J),J=1,NTOT),
+     &           (LSEV(J),J=1,NTOT),(RSEV(J),J=1,NTOT)
+      end if
 *     CLOSE (UNIT=3)
 *
 *       Produce output file for tidal tail members.

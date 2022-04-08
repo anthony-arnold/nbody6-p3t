@@ -138,7 +138,7 @@
 *
 *       Obtain the total kinetic & potential energy.
    52 CALL ENERGY2
-*
+ 
 *       Check option for astrophysical units.
       if (KZ(22).EQ.-1) then
 *       Save K.E. and P.E. of C.Ms for TCR & TRH (units of M_sun, pc & km/s).
@@ -211,11 +211,11 @@
 *       Scale non-zero velocities by virial theorem ratio.
           IF (ZKIN.GT.0.0D0) THEN
               QV = SQRT(Q*VIR/ZKIN)
-              DO 60 I = 1,N
-                  DO 58 K = 1,3
-                      XDOT(K,I) = XDOT(K,I)*QV
-   58             CONTINUE
-   60         CONTINUE
+c             DO 60 I = 1,N
+c                 DO 58 K = 1,3
+c                     XDOT(K,I) = XDOT(K,I)*QV
+c  58             CONTINUE
+c  60         CONTINUE
           ELSE
               QV = 1.0
           END IF
@@ -224,30 +224,24 @@
           E0 = -0.25
 *       Include case of hot system inside reflecting boundary.
           IF (KZ(29).GT.0.AND.Q.GT.1.0) E0 = 0.25
-*         ETOT = (Q - 1.0)*POT
-          ETOT = ZKIN*QV**2 - POT + ETIDE
-*       Note that final ETOT will differ from -0.25 since ETIDE = 0.
-          IF (Q.LT.1.0) THEN
-              SX = E0/ETOT
-          ELSE
-              SX = 1.0
-          END IF
+          ETOT = -POT+ETIDE+ZKIN
+          SX = -0.5*POT/ETOT
 *
           WRITE (6,65)  SX, ETOT, BODY(1), BODY(N), ZMASS/FLOAT(N)
    65     FORMAT (/,12X,'SCALING:    SX =',F6.2,'  E =',1PE10.2,
      &                  '  M(1) =',E9.2,'  M(N) =',E9.2,'  <M> =',E9.2)
 *
-*       Scale coordinates & velocities to the new units.
-          DO 70 I = 1,N
-              DO 68 K = 1,3
-                  X(K,I) = X(K,I)/SX
-                  XDOT(K,I) = XDOT(K,I)*SQRT(SX)
-   68         CONTINUE
-   70     CONTINUE
+*       Never scale coordinates & velocities to the new units.
+c         DO 70 I = 1,N
+c             DO 68 K = 1,3
+c                 X(K,I) = X(K,I)/SX
+c                 XDOT(K,I) = XDOT(K,I)*SQRT(SX)
+c  68         CONTINUE
+c  70     CONTINUE
 *
 *       Set current energies to consistent values (may be needed in XTRNL0).
-          ZKIN = ZKIN*QV**2*SX
-          POT = POT*SX
+c         ZKIN = ZKIN*QV**2*SX
+c         POT = POT*SX
       END IF
 *
 *       Perform second stage of the optional binary uploading procedure.

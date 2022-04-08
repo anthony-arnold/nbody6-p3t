@@ -17,7 +17,7 @@
       mtin = 0.d0
 
       do j=ifirst,ntot
-        estar = phi(j)+0.5*((va(1,j)-dvr(1))**2+(va(2,j)-dvr(2))**2
+        estar = -phi(j)+0.5*((va(1,j)-dvr(1))**2+(va(2,j)-dvr(2))**2
      *      +(va(3,j)-dvr(3))**2)
 
 c Assume all stars bound if cluster has reflective boundary
@@ -56,7 +56,7 @@ C Check which star is IMBH
       do k=ifirst,ntot
         dis2=((rdens(1)-xa(1,k))**2+(rdens(2)-xa(2,k))**2+
      *     (rdens(3)-xa(3,k))**2)
-        estar = phi(k)+0.5*((va(1,k)-dvr(1))**2+(va(2,k)-dvr(2))**2
+        estar = -phi(k)+0.5*((va(1,k)-dvr(1))**2+(va(2,k)-dvr(2))**2
      *      +(va(3,k)-dvr(3))**2)
 
 c Assume all stars bound if cluster has reflective boundary
@@ -231,7 +231,7 @@ C Kumulieren der Masse
       end do
 
       do i=ifirst,ntot
-        estar = phi(i)+0.5*((va(1,i)-dvr(1))**2+(va(2,i)-dvr(2))**2
+        estar = -phi(i)+0.5*((va(1,i)-dvr(1))**2+(va(2,i)-dvr(2))**2
      *     +(va(3,i)-dvr(3))**2)
        if (estar.lt.0.d0.and.bodya(i).gt.0.0) then
         if (i.le.n) then
@@ -288,7 +288,7 @@ c     dmtot=ZMDOT/(ZMASS*ZMBAR)
       end do
 
       do i=1,n
-       estar = phi(i)+0.5*((va(1,i)-dvr(1))**2+(va(2,i)-dvr(2))**2
+       estar = -phi(i)+0.5*((va(1,i)-dvr(1))**2+(va(2,i)-dvr(2))**2
      *      +(va(3,i)-dvr(3))**2)
        if (estar.lt.0.d0.and.bodya(i).gt.0.0) then
         do j=0,14
