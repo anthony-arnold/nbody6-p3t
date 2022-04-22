@@ -72,10 +72,10 @@
       END IF
 
 *     New forces
-      CALL GPUNB_REGF(NN,BODY(IFIRST),
+      CALL GPUNB_LF(NN,BODY(IFIRST),
      &     X0(1,IFIRST),X0DOT(1,IFIRST),
      &     GPUACC(1,IFIRST), GPUJRK(1,IFIRST),
-     &     LMAX, LIST(1,IFIRST), RCUT(IFIRST))
+     &     GPUPHI(IFIRST), RCUT(IFIRST))
 *
 !     $omp parallel do schedule(runtime)
       DO J = IFIRST,NTOT
