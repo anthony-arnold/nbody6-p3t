@@ -153,6 +153,8 @@ c                    == 0.0044985 pc^3/Myr^2/Msun
 
       subroutine checkend (rp, vp)
       include "common6.h"
+      COMMON/GALAXY/ GMG,RG(3),VG(3),FG(3),FGD(3),TG,OMEGA,
+     &       MBULGE,RBULGE,MDISK,SCALEA,SCALEB,MHALO,RHALO,VCIRC
       real*8 rp(3), vp(3), ru(3), vu(3), dis, vr
 
       ru(1) = rp(1)*rbar
@@ -171,6 +173,10 @@ c                    == 0.0044985 pc^3/Myr^2/Msun
              vrfinold=vr
              call output
              WRITE(*,*) 'Galaxy end'
+             write (*,*) "GC ",(time+toff)*tstar,rg(1)*rbar,
+     &                          rg(2)*rbar,rg(3)*rbar,
+     &                          vg(1)*vstar,
+     &                          vg(2)*vstar,vg(3)*vstar
              stop
       end if
 
