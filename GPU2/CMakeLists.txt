@@ -149,7 +149,7 @@ SET(KS_SOURCES
   intgrt.f;intide.f;jacobi.f;kepler.f;kick.f;kick2.f;kozai.f;ksapo.f;
   kscorr.f;ksin2.f;ksmod.f;ksperi.f;
   ksrect.f;ksres.f;ksres2.f;
-  kstide.f;lagr.f;lagr2.f;levels.f;magbrk.f;matrix.f;mdot.f;merge.f;
+  kstide.f;lagr.f;lagr2.f;levels.f;magbrk.f;matrix.f;merge.f;
   merge2.f;mix.f;mloss.f;mlwind.f;modify.f;mrenv.f;mtrace.f;
   nbhist.f;nbint.f;nbpot.f;nbrem.f;nbrest.f;nbsort.f;nbtide.f;
   newtev.f;nstab.f;ntint.f;offset.f;orbit.f;peri.f;permit.f;
@@ -332,6 +332,7 @@ add_executable(nbody7.tree
   ${CMAKE_CURRENT_SOURCE_DIR}/sort2.f
   ${CMAKE_CURRENT_SOURCE_DIR}/binlist.f
   ${CMAKE_CURRENT_SOURCE_DIR}/dcen.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/../Ncode/mdot.f
   )
 add_executable(nbody7.leapfrog
   ${CMAKE_CURRENT_SOURCE_DIR}/fpoly0.leapfrog.f
@@ -374,6 +375,7 @@ add_executable(nbody7.leapfrog
   ${CMAKE_CURRENT_SOURCE_DIR}/sort2.f
   ${CMAKE_CURRENT_SOURCE_DIR}/binlist.f
   ${CMAKE_CURRENT_SOURCE_DIR}/dcen.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/mdot.leapfrog.f
   )
 
 add_executable(nbody7.gpu
@@ -409,6 +411,7 @@ add_executable(nbody7.gpu
   ${CMAKE_CURRENT_SOURCE_DIR}/cmfirr2.f
   ${CMAKE_CURRENT_SOURCE_DIR}/jpred2.f
   ${CMAKE_CURRENT_SOURCE_DIR}/kspert.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/../Ncode/mdot.f
   ${GPU_CH_SOURCES}
   )
 

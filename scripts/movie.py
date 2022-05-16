@@ -31,7 +31,7 @@ from matplotlib.path import Path
 
 EX = Path([(-1, -1), (1, 1), (1, -1), (-1, 1)],
           [Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO])
-NORM = matplotlib.colors.Normalize(0, 10)
+NORM = matplotlib.colors.LogNorm(2, 9)
 
 # TODO: Read these from input
 ZMBAR = 0.626032
@@ -99,7 +99,7 @@ if __name__ == '__main__':
     plt.rcParams['font.size'] = 18
     plt.style.use('dark_background')
 
-    fig, ax = plt.subplots(ncols=2, figsize=(1280*px, 720*px))
+    fig, ax = plt.subplots(ncols=2, figsize=(1920*px, 1080*px))
 
     ax[0].set(xlim=EXTENTS, ylim=EXTENTS)
     ax[0].set_xlabel('x / kpc')
@@ -162,7 +162,7 @@ if __name__ == '__main__':
         # Do once: Place the colorbar on the second of the axes.
         if len(cbs) == 0:
             cbs.append(
-                fig.colorbar(ax=ax[1], mappable=None, cmap=matplotlib.cm.hot, norm=NORM,
+                fig.colorbar(ax=ax[1], mappable=None, cmap=matplotlib.cm.afmhot, norm=NORM,
                              label=r'$\log_{10}$ M$_{\odot}$ kpc$^{-2}$')
             )
 

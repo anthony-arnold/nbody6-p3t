@@ -932,12 +932,12 @@
             ENDIF
 *
 *       Check optional diagnostics.
-            IF (KZ(19).GT.3) THEN
-               WRITE(6,36) I, NAME(I), KW, KSTAR(I), BODY(I)*ZMBAR,
-     &                     DMSUN, ZMDOT, TPHYS
-  36           FORMAT(' MDOT:    I NM KW K* MS DMS ZMDOT T6 ',
-     &                           4I5,F6.1,F7.2,F7.1,F8.1)
-            END IF
+c           IF (KZ(19).GT.3) THEN
+c              WRITE(6,36) I, NAME(I), KW, KSTAR(I), BODY(I)*ZMBAR,
+c    &                     DMSUN, ZMDOT, TPHYS
+c 36           FORMAT(' MDOT:    I NM KW K* MS DMS ZMDOT T6 ',
+c    &                           4I5,F6.1,F7.2,F7.1,F8.1)
+c           END IF
 *
 *       Replace any KS components by corresponding c.m. for main procedures.
             IF (I.LT.IFIRST) THEN
@@ -1130,13 +1130,14 @@
          IF (KZ(19).GT.3.AND.(KW0.NE.KW.OR.ICORR)) THEN
             IF (KW0.NE.KW) THEN
                WHICH1 = ' TYPE   '
-            ELSE
-               WHICH1 = ' MASS   '
-            END IF
+c           ELSE
+c              WHICH1 = ' MASS   '
+c           END IF
             WRITE(6,926)WHICH1, TPHYS, I, NAME(I), DMR, KW0, KW, M0, M1,
      &                  RADIUS(I)*SU, EMDOT
  926        FORMAT(' NEW',A8,' TPHYS I NAM DM/M KW0 KW M0 M R EMD ',
-     &                         F7.1,2I5,F6.2,2I3,2F6.1,F7.1,F10.5)
+     &                         F7.1,2I7,F6.2,2I3,2F7.2,F7.1,F10.5)
+            END IF
          END IF
 *
 *       Base new time scale for changes in radius & mass on stellar type.

@@ -171,6 +171,54 @@ int numCPU, numGPU;
 constexpr int MAX_CPU = 38;
 constexpr int MAX_GPU = 4;
 int devid[MAX_GPU];
+
+
+
+void approx_grav(
+        int *ni,
+        double mi[],
+        double xi[][3],
+        double vi[][3],
+        double acc[][3],
+        double jrk[][3],
+        double rcut[]) {
+
+   SYSTEM->localTree.setN(*ni);
+   SYSTEM->set_t_current(0.0f);
+   copy_to_bonsai(*ni, mi, xi, vi, rcut, *SYSTEM, FIRST_SORT);
+   FIRST_SORT = false;
+   SYSTEM->approximate_gravity(SYSTEM->localTree);
+
+   ID2IDX.resize(*ni);
+
+   SYSTEM->sync_grav();
+   SYSTEM->localTree.neighbours.d2h(false, SYSTEM->copy_stream());
+   SYSTEM->localTree.bodies_dens.d2h(false, SYSTEM->exec_stream());
+
+
+   SYSTEM->localTree.bodies_ids.d2h();
+#pragma omp parallel for
+   for (int i = 0; i < *ni; i++) {
+      ID2IDX[SYSTEM->localTree.bodies_ids[i]] = i;
+   }
+
+   SYSTEM->localTree.bodies_acc1.d2h();
+#pragma omp parallel for schedule(static)
+   for (int i = 0; i < *ni; i++) {
+      int idx = ID2IDX[i];
+      const real4& dev_acc = SYSTEM->localTree.bodies_acc1[idx];
+      acc[i][0] = static_cast<double>(dev_acc.x);
+      acc[i][1] = static_cast<double>(dev_acc.y);
+      acc[i][2] = static_cast<double>(dev_acc.z);
+      jrk[i][0] = 0.0;
+      jrk[i][1] = 0.0;
+      jrk[i][2] = 0.0;
+   }
+
+   SYSTEM->sync_exec();
+
+}
+
 }
 
 
@@ -237,6 +285,32 @@ extern "C" {
 #endif
     }
 
+   void gpunb_lf_(
+        int *ni,
+        double mi[],
+        double xi[][3],
+        double vi[][3],
+        double acc[][3],
+        double jrk[][3],
+        double phi[],
+        double rcut[]) {
+
+        auto start = now();
+
+        ::approx_grav(ni, mi, xi, vi, acc, jrk, rcut);
+
+#pragma omp parallel for schedule(static)
+        for (int i = 0; i < *ni; i++) {
+           int idx = ID2IDX[i];
+           const real4& dev_acc = SYSTEM->localTree.bodies_acc1[idx];
+           phi[i] = static_cast<double>(dev_acc.w);
+        }
+
+        total_time += now() - start;
+        num_ops++;
+   }
+
+
     void gpunb_regf_(
         int *ni,
         double mi[],
@@ -249,68 +323,38 @@ extern "C" {
         double rcut[])
     {
         auto start = now();
-        SYSTEM->localTree.setN(*ni);
-        SYSTEM->set_t_current(0.0f);
-        copy_to_bonsai(*ni, mi, xi, vi, rcut, *SYSTEM, FIRST_SORT);
-        FIRST_SORT = false;
-        SYSTEM->approximate_gravity(SYSTEM->localTree);
+
+        ::approx_grav(ni, mi, xi, vi, acc, jrk, rcut);
 
         int dst_lst_size = *lmax;
         int src_lst_size = SYSTEM->localTree.n_nbmax;
-        ID2IDX.resize(*ni);
-
-        SYSTEM->sync_grav();
-        SYSTEM->localTree.neighbours.d2h(false, SYSTEM->copy_stream());
-        SYSTEM->localTree.bodies_dens.d2h(false, SYSTEM->exec_stream());
-
-
-        SYSTEM->localTree.bodies_ids.d2h();
-#pragma omp parallel for
-        for (int i = 0; i < *ni; i++) {
-            ID2IDX[SYSTEM->localTree.bodies_ids[i]] = i;
-        }
-
-        SYSTEM->localTree.bodies_acc1.d2h();
-#pragma omp parallel for schedule(static)
-        for (int i = 0; i < *ni; i++) {
-            int idx = ID2IDX[i];
-            const real4& dev_acc = SYSTEM->localTree.bodies_acc1[idx];
-            acc[i][0] = static_cast<double>(dev_acc.x);
-            acc[i][1] = static_cast<double>(dev_acc.y);
-            acc[i][2] = static_cast<double>(dev_acc.z);
-            jrk[i][0] = 0.0;
-            jrk[i][1] = 0.0;
-            jrk[i][2] = 0.0;
-        }
-
-        SYSTEM->sync_exec();
 
 #pragma omp parallel for schedule(static)
         for (int i = 0; i < *ni; i++) {
-            int idx = ID2IDX[i];
-            int nnb = static_cast<int>(SYSTEM->localTree.bodies_dens[idx].y);
-            if (nnb > NBMAX) {
-                nnb = -nnb;
-            }
-            list[i*dst_lst_size] = nnb;
+           int idx = ID2IDX[i];
+           int nnb = static_cast<int>(SYSTEM->localTree.bodies_dens[idx].y);
+           if (nnb > NBMAX) {
+              nnb = -nnb;
+           }
+           list[i*dst_lst_size] = nnb;
         }
         SYSTEM->sync_copy();
 
 #pragma omp parallel for
         for (int i = 0; i < *ni; i++) {
-            int idx = ID2IDX[i];
-            int nnb = list[i*dst_lst_size];
-            if (nnb < 1) continue;
+           int idx = ID2IDX[i];
+           int nnb = list[i*dst_lst_size];
+           if (nnb < 1) continue;
 
-            int* dst_lst = &list[i*dst_lst_size+1];
-            int* src_lst = &SYSTEM->localTree.neighbours[idx*src_lst_size];
+           int* dst_lst = &list[i*dst_lst_size+1];
+           int* src_lst = &SYSTEM->localTree.neighbours[idx*src_lst_size];
 
-            for (int j = 0; j < nnb; j++) {
-                int xfm = SYSTEM->localTree.bodies_ids[src_lst[j]];
-                auto bound = std::lower_bound(dst_lst, dst_lst + j, xfm);
-                std::move_backward(bound, dst_lst + j, dst_lst + j + 1);
-                *bound = xfm;
-            }
+           for (int j = 0; j < nnb; j++) {
+              int xfm = SYSTEM->localTree.bodies_ids[src_lst[j]];
+              auto bound = std::lower_bound(dst_lst, dst_lst + j, xfm);
+              std::move_backward(bound, dst_lst + j, dst_lst + j + 1);
+              *bound = xfm;
+           }
         }
         total_time += now() - start;
         num_ops++;

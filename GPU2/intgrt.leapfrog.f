@@ -42,29 +42,18 @@
       END DO
 !     $omp end parallel do
 *
-*     Half-kick
-      CALL STOPWATCH(TBEG)
-!     $omp parallel do schedule(runtime)
-      DO J = IFIRST,NTOT
-         DO K=1,3
-            X0DOT(K,J) = X0DOT(K,J) + FR(K,J)*STEPLF2
-         END DO
-         T0R(J) = TIME + SMAX*0.5D0
-      END DO
-!     $omp end parallel do
-      CALL STOPWATCH(TEND)
-      TINTRE = TINTRE + TEND - TBEG
-*
 *     Set new time and save block time
  1    TIME = TIME + SMAX
       TTOT = TIME + TOFF
 *
-*     Drift
+*     Half Drift
+***   T_pos = T_vel + 0.5
+*
       CALL STOPWATCH(TBEG)
 !     $omp parallel do schedule(runtime)
       DO J = IFIRST,NTOT
          DO K=1,3
-            X0(K,J) = X0(K,J) + X0DOT(K,J)*STEPLF
+            X0(K,J) = X0(K,J) + X0DOT(K,J)*STEPLF2
          END DO
       END DO
 !     $omp end parallel do
@@ -83,10 +72,10 @@
       END IF
 
 *     New forces
-      CALL GPUNB_REGF(NN,BODY(IFIRST),
+      CALL GPUNB_LF(NN,BODY(IFIRST),
      &     X0(1,IFIRST),X0DOT(1,IFIRST),
      &     GPUACC(1,IFIRST), GPUJRK(1,IFIRST),
-     &     LMAX, LIST(1,IFIRST), RCUT(IFIRST))
+     &     GPUPHI(IFIRST), RCUT(IFIRST))
 *
 !     $omp parallel do schedule(runtime)
       DO J = IFIRST,NTOT
@@ -141,20 +130,15 @@
 *
 *     Accumulate tidal energy change for general galactic potential.
 *     Note: Taylor series at end of interval with negative argument.
-            ETIDE = ETIDE + BODY(I)*(0.5*W2DOT*SMAX - WDOT)*SMAX
+            ETIDE = ETIDE + BODY(J)*(0.5*W2DOT*SMAX - WDOT)*SMAX
 *     Note: integral of Taylor series for V*P using final values.
          END IF
       END DO
       END IF
 *
-*       Check next adjust time before beginning a new block.
-      IF (TIME.GE.TADJ) THEN
-          TIME = TADJ
-          IPHASE = 3
-          GO TO 100
-      END IF
-*
 *     Full-kick
+***   T_vel = T_pos + 0.5
+*
       CALL STOPWATCH(TBEG)
 !     $omp parallel do schedule(runtime)
       DO J = IFIRST,NTOT
@@ -166,6 +150,26 @@
 !     $omp end parallel do
       CALL STOPWATCH(TEND)
       TINTRE = TINTRE + TEND - TBEG
+*
+*
+*     Half Drift
+      CALL STOPWATCH(TBEG)
+!     $omp parallel do schedule(runtime)
+      DO J = IFIRST,NTOT
+         DO K=1,3
+            X0(K,J) = X0(K,J) + X0DOT(K,J)*STEPLF2
+         END DO
+      END DO
+*
+*
+*** HERE: T_pos = T_vel
+*
+*       Check next adjust time before beginning a new block.
+      IF (TIME.GE.TADJ) THEN
+          TIME = TADJ
+          IPHASE = 3
+          GO TO 100
+      END IF
 *
 *       Advance counters and check timer & optional COMMON save (NSUB = 0).
       NTIMER = NTIMER + NN
@@ -220,20 +224,17 @@
 *       Close GPU & GPUIRR library and stop.
       CALL GPUNB_CLOSE
       STOP
-*
-*     Half-kick to catch up.
- 100  CALL STOPWATCH(TBEG)
-!     $omp parallel do schedule(runtime)
-      DO J = IFIRST,NTOT
-         DO K=1,3
-            X0DOT(K,J) = X0DOT(K,J) + FR(K,J)*STEPLF2
-         END DO
-         T0R(J) = TIME
-         T0(J) = TIME
-      END DO
-!     $omp end parallel do
-      CALL STOPWATCH(TEND)
-      TINTRE = TINTRE + TEND - TBEG
+*       Check optional mass loss time at end of block-step.
+ 100  IF (KZ(19).GT.0) THEN
+*       Delay until time commensurate with 100-year step (new polynomials).
+          IF (TIME.GT.TMDOT.AND.DMOD(TIME,STEPX).EQ.0.0D0) THEN
+              IF (KZ(19).GE.3) THEN
+                  CALL MDOT
+              ELSE
+                  CALL MLOSS
+              END IF
+          END IF
+      END IF
 *     COPY for adjust
 !     $omp parallel do
  105  DO I = IFIRST,NTOT

@@ -35,10 +35,10 @@
       END DO
 !     $omp end parallel do
 *
-      CALL GPUNB_REGF(NFI,BODY(IFIRST),
+      CALL GPUNB_LF(NFI,BODY(IFIRST),
      &     X(1,IFIRST),XDOT(1,IFIRST),
      &     FR(1,IFIRST), D1R(1,IFIRST),
-     &     LMAX, LIST(1,IFIRST), RCUT(IFIRST))
+     &     GPUPHI(IFIRST), RCUT(IFIRST))
 *
       DO I = IFIRST,NTOT
          NNB = LIST(1,I)
