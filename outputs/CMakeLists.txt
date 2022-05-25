@@ -1,6 +1,8 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+project(outputs)
 
 enable_language(C)
+add_compile_options(-std=c11 -pedantic -Wall -Wextra -Werror -pedantic-errors)
 
 add_library(outputs
   ${CMAKE_CURRENT_SOURCE_DIR}/src/numfrm.c

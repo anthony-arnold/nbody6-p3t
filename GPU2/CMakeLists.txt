@@ -422,5 +422,3 @@ target_link_libraries(nbody7.gpu nbody gpunb_velocity pot irr_avx)
 
 add_executable(getproj ${CMAKE_CURRENT_SOURCE_DIR}/lib/getproj.c)
 target_link_libraries(getproj m)
-
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/lib/outputs)

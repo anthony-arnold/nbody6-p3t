@@ -2,8 +2,14 @@
  *
  */
 
+#ifdef THREAD_SAFE
+#define LOCAL _Thread_local
+#else
+#define LOCAL
+#endif
+
 int* _oerrno() {
-    static _Thread_local int oerrno = 0;
+    static LOCAL int oerrno = 0;
     return &oerrno;
 }
 
