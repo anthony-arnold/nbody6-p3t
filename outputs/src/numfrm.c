@@ -1,31 +1,28 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "oerrno.h"
+#include "meta.h"
+#include "discard.h"
 #include "reclen.h"
 
-static bool read_chunk(void* buffer, size_t size, FILE* fp) {
-    size_t len = fread(buffer, size, 1, fp);
-    if (len != 1) {
-        if (feof(fp)) {
-            _oseterrno(OERR_FRAME_TRUNC);
-        }
-        else {
-            _oseterrno(OERR_READ);
-        }
-        return false;
+extern bool ofail();
+
+static void maybe_eof(FILE* fp) {
+    /* Could be eof */
+    if (feof(fp)) {
+        _oseterrno(OERR_FRAME_TRUNC);
     }
-    return true;
+    /* Generic read failure. */
+    else {
+        _oseterrno(OERR_READ);
+    }
 }
 
-static bool discard(FILE* fp, long size) {
-    return fseek(fp, size, SEEK_CUR) == 0;
-}
-
-static size_t frame_length(int ntot, int nk) {
-    static const size_t VAR_SIZE = 8;
-    static const size_t SCALAR_SIZE = 8;
-    static const size_t VEC_SIZE = 3 * 8;
-    static const size_t NAME_SIZE = 4;
+static int data_length(int ntot, int nk) {
+    static const int VAR_SIZE = 8;
+    static const int SCALAR_SIZE = 8;
+    static const int VEC_SIZE = 3 * 8;
+    static const int NAME_SIZE = 4;
 
 
     return VAR_SIZE * nk +   /* HEADER */
@@ -35,52 +32,65 @@ static size_t frame_length(int ntot, int nk) {
         NAME_SIZE * ntot;    /* NAME */
 }
 
+
+static bool discard_data(FILE* fp, int ntot, int nk) {
+    /* Discard the data record */
+    int datalen = _discard(fp);
+    if (datalen < 0) {
+        if (!ofail()) {
+            /* Error mode not set yet. */
+            maybe_eof(fp);
+        }
+        return false;
+    }
+    if (datalen != data_length(ntot, nk)) {
+        /* Unexpected */
+        _oseterrno(OERR_FORMAT);
+        return false;
+    }
+
+    return true;
+}
+
 static bool read_frame(FILE* fp) {
-    char header[16];
     int ntot, nk;
 
-    /* Read the meta data */
-    if (!read_chunk(header, 16, fp)) {
+    /* Read a record length to test for more data. */
+    if (_reclen(fp) < 0) {
+        /* Check for read failure.
+           EOF indicates no more frames and isn't an error. */
+        if (!feof(fp)) {
+            _oseterrno(OERR_READ);
+        }
+        else {
+            _oseterrno(OERR_SUCCESS);
+        }
         return false;
     }
 
-    ntot = *(int*)&header[0];
-    if (ntot < 0) {
-        _oseterrno(OERR_BAD_HEADER);
+    /* Rewind the record length so readrec can get it. */
+    if (fseek(fp, -4, SEEK_CUR) != 0) {
+        _oseterrno(OERR_READ);
         return false;
     }
 
-    nk = *(int*)&header[4];
-    if (nk < 0) {
-        _oseterrno(OERR_BAD_HEADER);
+    /* Read the metadata */
+    if (!_meta(fp, &ntot, &nk)) {
+        if (!ofail()) {
+            /* Error mode not set yet. */
+            maybe_eof(fp);
+        }
         return false;
     }
 
-    /* Read the final record length of the meta data. */
-    if (!_reclen(fp)) {
-        return false;
-    }
-
-    /* Read the opening record length of the data. */
-    if (!_reclen(fp)) {
-        return false;
-    }
-
-    /* Discard the frame */
-    if (!discard(fp, frame_length(ntot, nk))) {
-        return false;
-    }
-
-    /* Read the final record length of the data. */
-    if (!_reclen(fp)) {
-        return false;
-    }
-    return true;
+    return discard_data(fp, ntot, nk);
 }
 
 int numfrm(FILE* fp) {
     int num = 0;
-    bool ok = true;
+
+    /* Clear error flag */
+    _oseterrno(OERR_SUCCESS);
 
     if (!fp) {
         _oseterrno(OERR_NULL);
@@ -90,16 +100,8 @@ int numfrm(FILE* fp) {
     /* Reset the stream */
     if(0 == fseek(fp, 0, SEEK_SET)) {
         /* Read each frame */
-        while (ok && _reclen(fp)) {
-            ok = read_frame(fp);
-        }
-    }
-    if (!ok) {
-        if (feof(fp)) {
-            _oseterrno(OERR_FRAME_TRUNC);
-        }
-        else if (ferror(fp)) {
-            _oseterrno(OERR_READ);
+        while (read_frame(fp)) {
+            num++;
         }
     }
 

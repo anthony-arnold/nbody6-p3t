@@ -7,7 +7,9 @@ static const char* errstrs[OERR_NUM_ERRORS] = {
     "Unexpected NULL pointer",
     "Read error",
     "Frame truncated",
-    "Bad header"
+    "Bad frame meta data",
+    "Bad fortran record length",
+    "Bad fortran file"
 };
 
 const char* _oerrstr() {

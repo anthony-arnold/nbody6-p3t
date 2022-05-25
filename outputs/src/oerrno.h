@@ -8,7 +8,9 @@ typedef enum {
     OERR_NULL,
     OERR_READ,
     OERR_FRAME_TRUNC,
-    OERR_BAD_HEADER,
+    OERR_BAD_META,
+    OERR_RECLEN,
+    OERR_FORMAT,
 
     /* MUST GO LAST */
     OERR_NUM_ERRORS
