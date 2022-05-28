@@ -27,9 +27,13 @@ double bound_m(const struct frm_t* frame) {
 }
 
 int main(int argc, char* argv[]) {
+    int skip = 0;
     if (argc < 2) {
         fprintf(stderr, "Usage: rtide <file>\n");
         return 1;
+    }
+    if (argc > 2) {
+        skip = atoi(argv[2]);
     }
 
     FILE* fp = opnout(argv[1]);
@@ -38,8 +42,15 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    double mass = 0;
+    int skipc = 0;
     while (!feof(fp)) {
-        double mass = 0;
+        if (skipc--) {
+            skpfrm(fp);
+            continue;
+        }
+        skipc = skip;
+
         struct frm_t* frame = rdfrm(fp, -1);
         if (ofail()) {
             fprintf(stderr, "%s\n", oerror());

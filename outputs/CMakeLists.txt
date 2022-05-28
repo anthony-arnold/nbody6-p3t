@@ -30,6 +30,7 @@ add_library(outputs
   ${CMAKE_CURRENT_SOURCE_DIR}/src/reclen.c
   ${CMAKE_CURRENT_SOURCE_DIR}/src/readrec.c
   ${CMAKE_CURRENT_SOURCE_DIR}/src/rtide.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/skpfrm.c
   ${CMAKE_CURRENT_SOURCE_DIR}/src/vsub.c)
 target_link_libraries(outputs m)
 
