@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include "oerrno.h"
 
-int _reclen(FILE* fp) {
+long _reclen(FILE* fp, long expect) {
     int_least32_t len;
     size_t size = fread(&len, 4, 1, fp);
 
@@ -11,6 +11,10 @@ int _reclen(FILE* fp) {
     }
     if (len < 0) {
         _oseterrno(OERR_PANIC);
+        return -1;
+    }
+    if (expect > 0 && expect != len) {
+        _oseterrno(OERR_FORMAT);
         return -1;
     }
     return len;

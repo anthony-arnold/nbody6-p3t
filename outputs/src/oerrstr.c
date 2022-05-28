@@ -9,7 +9,9 @@ static const char* errstrs[OERR_NUM_ERRORS] = {
     "Frame truncated",
     "Bad frame meta data",
     "Bad fortran record length",
-    "Bad fortran file"
+    "Bad fortran file",
+    "Bad parameter value",
+    "Out of memory"
 };
 
 const char* _oerrstr() {

@@ -4,7 +4,7 @@
 
 int _discard(FILE* fp) {
     /* Read the record length. */
-    int len = _reclen(fp);
+    int len = _reclen(fp, 0);
     if (len < 0) {
         return -1;
     }
@@ -15,7 +15,7 @@ int _discard(FILE* fp) {
     }
 
     /* Discard the trailing record length. */
-    int trail = _reclen(fp);
+    int trail = _reclen(fp, 0);
     if (trail < 0) {
         return -1;
     }

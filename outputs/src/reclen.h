@@ -3,6 +3,6 @@
 
 #include <stdio.h>
 
-extern int _reclen(FILE* fp);
+extern long _reclen(FILE* fp, long expect);
 
 #endif

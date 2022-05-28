@@ -4,8 +4,16 @@ project(outputs)
 enable_language(C)
 add_compile_options(-std=c11 -pedantic -Wall -Wextra -Werror -pedantic-errors)
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
 add_library(outputs
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/data.c
   ${CMAKE_CURRENT_SOURCE_DIR}/src/discard.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/frmhdr.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/frmlst.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/frmmeta.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/frmsz.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/itrprt.c
   ${CMAKE_CURRENT_SOURCE_DIR}/src/meta.c
   ${CMAKE_CURRENT_SOURCE_DIR}/src/numfrm.c
   ${CMAKE_CURRENT_SOURCE_DIR}/src/oerrno.c
@@ -20,3 +28,8 @@ add_library(outputs
 add_executable(count_frames
   ${CMAKE_CURRENT_SOURCE_DIR}/count_frames.c)
 target_link_libraries(count_frames outputs)
+
+
+add_executable(list_frames
+  ${CMAKE_CURRENT_SOURCE_DIR}/list_frames.c)
+target_link_libraries(list_frames outputs)

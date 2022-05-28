@@ -11,6 +11,8 @@ typedef enum {
     OERR_BAD_META,
     OERR_RECLEN,
     OERR_FORMAT,
+    OERR_PARAM,
+    OERR_OOM,
 
     /* MUST GO LAST */
     OERR_NUM_ERRORS

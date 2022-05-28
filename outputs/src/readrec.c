@@ -4,7 +4,7 @@
 
 int _readrec(FILE* fp, char* buff, int buffsize, int *reclen) {
     /* Read the record length. */
-    *reclen = _reclen(fp);
+    *reclen = _reclen(fp, 0);
     if (*reclen < 0) {
         return -1;
     }
@@ -23,15 +23,5 @@ int _readrec(FILE* fp, char* buff, int buffsize, int *reclen) {
     }
 
     /* Discard the trailing record length. */
-    int trail = _reclen(fp);
-    if (trail < 0) {
-        return -1;
-    }
-    if (trail != *reclen) {
-        /* Unexpected */
-        _oseterrno(OERR_FORMAT);
-        return -1;
-    }
-
-    return *reclen;
+    return _reclen(fp, *reclen);
 }
