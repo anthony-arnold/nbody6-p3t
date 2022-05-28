@@ -10,7 +10,9 @@
 #include <stdlib.h>
 #include <assert.h>
 
-double find_rt(const struct frm_t* frame) {
+//static const double G = 6.6743e-08;
+
+double find_rt(const struct frm_t* frame, double mass) {
     /* Find external force. */
     double fx[3], fdx[3];
     forceir13(frame->hdr,
@@ -20,13 +22,14 @@ double find_rt(const struct frm_t* frame) {
               fdx);
 
     /* Find mass and circular velocity corresponding to fx. */
+    double r[3];
+    vsub(frame->hdr->rgal, frame->hdr->rdens, r);
+    double r2 = mag2(r);
+    double m = sqrt(mag2(fx)) * r2;
+    double vc = sqrt(m / sqrt(r2));
+    double rt = cbrt(mass / 2 * vc*vc) * pow(sqrt(mag2(frame->hdr->rgal)), 2.0/3.0);
 
-
-    /* Find omega for circular velocity. */
-
-    double omega = 0.5 * frame->hdr->tidal4;
-
-    return rtide(omega);
+    return rt;
 }
 
 int main(int argc, char* argv[]) {
@@ -53,7 +56,7 @@ int main(int argc, char* argv[]) {
                 mass += frame->ptcls[i].m;
             }
 
-            double rt = find_rt(frame);
+            double rt = find_rt(frame, mass);
             printf("%lf    %lf [%lf]\n",
                    frame->hdr->t * frame->hdr->tscale,
                    rt,
