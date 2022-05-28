@@ -45,3 +45,7 @@ target_link_libraries(list_frames outputs)
 add_executable(rtide
   ${CMAKE_CURRENT_SOURCE_DIR}/rtide.c)
 target_link_libraries(rtide outputs)
+
+add_executable(boundm
+  ${CMAKE_CURRENT_SOURCE_DIR}/boundm.c)
+target_link_libraries(boundm outputs)
