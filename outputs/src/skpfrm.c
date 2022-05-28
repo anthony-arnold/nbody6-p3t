@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdbool.h>
-#include "reclen.h"
 #include "oerrno.h"
 #include "discard.h"
 
