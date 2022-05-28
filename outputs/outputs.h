@@ -233,6 +233,14 @@ OEXTRN struct frm_t* rdfrm(FILE* fp, long ptr);
  */
 OEXTRN void freefrm(struct frm_t* frm);
 
+
+/**
+ * \brief Skip the current frame.
+ *
+ * \param fp A file open to the beginning of a frame.
+ */
+OEXTRN void skpfrm(FILE* fp);
+
 /**
  * \brief Calculate the force and first time derivative from
  * the galaxy particle according to Irrgang et al. 2013.

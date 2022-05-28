@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include "reclen.h"
 #include "oerrno.h"
+#include "discard.h"
 
 extern bool ofail();
 
@@ -9,22 +10,13 @@ static void maybe_eof(FILE* fp) {
     if (feof(fp)) {
         _oseterrno(OERR_FRAME_TRUNC);
     }
+    else {
+        _oseterrno(OERR_READ);
+    }
 }
 
 static void skprec(FILE* fp) {
-    long r = _reclen(fp, -1);
-    if (r < 0) {
-        maybe_eof(fp);
-        return;
-    }
-
-    /* skip record */
-    if (fseek(fp, r, SEEK_CUR)) {
-        _oseterrno(OERR_READ);
-        return;
-    }
-
-    if (_reclen(fp, r) != r) {
+    if (_discard(fp) < 0 && !ofail()) {
         maybe_eof(fp);
     }
 }

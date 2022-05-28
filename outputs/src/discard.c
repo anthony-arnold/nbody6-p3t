@@ -15,15 +15,5 @@ int _discard(FILE* fp) {
     }
 
     /* Discard the trailing record length. */
-    int trail = _reclen(fp, 0);
-    if (trail < 0) {
-        return -1;
-    }
-    if (trail != len) {
-        /* Unexpected */
-        _oseterrno(OERR_FORMAT);
-        return -1;
-    }
-
-    return len;
+    return _reclen(fp, len);
 }
