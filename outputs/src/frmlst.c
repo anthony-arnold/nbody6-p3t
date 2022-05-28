@@ -3,7 +3,6 @@
 #include "oerrno.h"
 
 extern bool ofail();
-extern int frmsz(int ntot, int nk);
 extern bool frmmeta(FILE* fp, long* ptr, int* ntot, int* nk);
 
 void frmlst(FILE* fp, long* ptrs, int bufsz, int* nptrs) {

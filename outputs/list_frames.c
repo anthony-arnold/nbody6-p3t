@@ -1,21 +1,7 @@
+#include <stdlib.h>
 #include "outputs.h"
 
-#define UNUSED(x) (void)(x)
-
-bool list_frame(int ntot, int nk, struct frm_hdr_t* hdr, double* c, void* d) {
-    UNUSED(nk);
-    UNUSED(c);
-    UNUSED(d);
-
-    double t = hdr->t * hdr->tscale;
-    printf("%lf %i\n", t, ntot);
-    return false;
-}
-
 int main(int argc, char* argv[]) {
-    int nframes;
-    long ptrs[1024];
-
     if (argc < 2) {
         fprintf(stderr, "Usage: list_frames <file>\n");
         return 1;
@@ -26,22 +12,18 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, "%s\n", oerror());
         return 1;
     }
-
-    frmlst(fp, ptrs, 1024, &nframes);
-    if (ofail()) {
-        fprintf(stderr, "%s\n", oerror());
-        return 1;
-    }
-    if (nframes > 1024) {
-        fprintf(stderr, "Too many frames: %i", nframes);
-        return 1;
-    }
-
-    for (int i = 0; i < nframes; i++) {
-        itrprt(fp, ptrs[i], list_frame, NULL);
+    while (!feof(fp)) {
+        int ntot;
+        struct frm_hdr_t* hdr;
+        frmhdr(fp, -1, &ntot, NULL, &hdr);
         if (ofail()) {
             fprintf(stderr, "%s\n", oerror());
-            break;
+            return 1;
+        }
+        if (hdr) {
+            double t = hdr->t * hdr->tscale;
+            printf("%lf %i\n", t, ntot);
+            free(hdr);
         }
     }
 

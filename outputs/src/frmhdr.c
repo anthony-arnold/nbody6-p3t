@@ -1,45 +1,62 @@
+#include <assert.h>
 #include <stdlib.h>
 #include "outputs.h"
 #include "oerrno.h"
+#include "meta.h"
+#include "reclen.h"
 
-bool frmhdr(FILE* fp, int nk, struct frm_hdr_t** hdr) {
-    size_t size = sizeof(double) * nk;
-    struct frm_hdr_t* tmp;
+extern bool _hdr(FILE* fp, int nk, struct frm_hdr_t** hdr);
+extern bool _fpstart(FILE* fp, long ptr);
 
+void frmhdr(FILE* fp, long ptr, int* ntot, int* nk,
+            struct frm_hdr_t** hdr) {
+    int _ntot, _nk;
+    long size, fstart;
     /* Clear error flag */
     _oseterrno(OERR_SUCCESS);
 
     if (!fp || !hdr) {
         _oseterrno(OERR_NULL);
-        return false;
+        return;
     }
     *hdr = NULL;
 
-    if (nk < 1) {
-        _oseterrno(OERR_PARAM);
-        return false;
+    if (!_fpstart(fp, ptr)) {
+        return;
     }
 
-    if (size < sizeof(struct frm_hdr_t)) {
-        size = sizeof(struct frm_hdr_t);
+    /* Read the frame meta. */
+    if (!_meta(fp, &_ntot, &_nk)) {
+        /* If meta fails, then either we're at the end of the file,
+           or meta will set the error condition. */
+        assert(feof(fp) || ofail());
+        return;
     }
-    tmp = malloc(size);
-    if (!tmp) {
-        _oseterrno(OERR_OOM);
-        return false;
+    if (ntot) {
+        *ntot = _ntot;
+    }
+    if (nk) {
+        *nk = _nk;
     }
 
-    if (fread(tmp->as, sizeof(double), nk, fp) != (size_t)nk) {
-        if (feof(fp)) {
-            _oseterrno(OERR_FRAME_TRUNC);
-        }
-        else {
+    /* Read the opening record length. */
+    size = _reclen(fp, 0);
+    if (size < 0) {
+        return;
+    }
+    fstart = ftell(fp);
+
+    /* Read the frame header. */
+    if (!_hdr(fp, _nk, hdr)) {
+        return;
+    }
+    /* Get to the end of the frame if not already there. */
+    if (!ofail()) {
+        if (fseek(fp, fstart + size, SEEK_SET)) {
             _oseterrno(OERR_READ);
         }
-        free(tmp);
-        return false;
+        else {
+            _reclen(fp, size);
+        }
     }
-
-    *hdr = tmp;
-    return true;
 }

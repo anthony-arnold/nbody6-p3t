@@ -6,7 +6,6 @@
 #include "reclen.h"
 
 extern bool ofail();
-extern long frmsz(int ntot, int nk);
 
 /**
  * One of the read functions failed in the middle of the frame.
@@ -23,7 +22,7 @@ static void maybe_eof(FILE* fp) {
     }
 }
 
-static bool discard_data(FILE* fp, int ntot, int nk) {
+static bool discard_data(FILE* fp) {
     /* Discard the data record */
     int datalen = _discard(fp);
     if (datalen < 0) {
@@ -31,11 +30,6 @@ static bool discard_data(FILE* fp, int ntot, int nk) {
             /* Error mode not set yet. */
             maybe_eof(fp);
         }
-        return false;
-    }
-    if (datalen != frmsz(ntot, nk)) {
-        /* Unexpected */
-        _oseterrno(OERR_FORMAT);
         return false;
     }
 
@@ -98,5 +92,5 @@ bool frmmeta(FILE* fp, long* ptr, int* ntot, int* nk) {
         *nk = _nk;
     }
 
-    return discard_data(fp, _ntot, _nk);
+    return discard_data(fp);
 }

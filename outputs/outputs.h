@@ -1,15 +1,16 @@
 #ifndef OUTPUTS_HEADER_INCLUDED
 #define OUTPUTS_HEADER_INCLUDED
 
+#define OEXTRN extern
+
 #include <stdio.h>
 #include <stdbool.h>
+#include "outputs/vmath.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
-#define OEXTRN extern
 
 /**
  * \brief Contains frame header data.
@@ -99,12 +100,25 @@ struct frm_hdr_t {
     };
 };
 
+struct particle_t {
+    double x[3];
+    double dx[3];
+    double m;
+};
+
+struct frm_t {
+    int ntot;
+    int nk;
+    struct frm_hdr_t* hdr;
+    struct particle_t ptcls[];
+};
+
 /**
  * \brief A callback function to read every particle in a frame.
  */
 typedef bool (*fn_frmrdr_t)(int,
                             int,
-                            struct frm_hdr_t*,
+                            const struct frm_hdr_t*,
                             double[7],
                             void*);
 
@@ -169,36 +183,77 @@ OEXTRN void frmlst(FILE* fp, long* ptrs, int bufsz, int* nptrs);
 OEXTRN bool frmmeta(FILE* fp, long* ptr, int* ntot, int* nk);
 
 /**
+ * \brief Read a frame header, discarding the particle data.
+ *
+ * \param fp The file handle.
+ * \param ptr The position in the stream containing the frame of interest.
+ * Pass a negative number to use the current position of the file.
+ * \param ntot If not NULL, will be populated with the number of
+ * particles contained in the frame.
+ * \param nk If not NULL, will be populated with the number of
+ * header items contained in the frame.
+ * \param hdr Will contain the frame hader. Must be `free`d.
+ *
+ * \return True if the call was successful.
+ */
+OEXTRN void frmhdr(FILE* fp, long ptr, int* ntot, int* nk,
+                   struct frm_hdr_t** hdr);
+
+/**
  * \brief Determine the size, in bytes, of the frame data, not including
  * the metadata.
  *
  * \param ntot The total number of particles.
  * \param nk The total number of header vars.
+ * \param kz19 Set to true if the output file was generated with KZ(19) on.
  *
  * \return The size of the data record, in bytes.
  */
-OEXTRN long frmsz(int ntot, int nk);
+OEXTRN long frmsz(int ntot, int nk, bool kz19);
+
+/**
+ * \brief Read one frame, including all of its data, from the stream
+ * at the given location.
+ *
+ * To read from the stream at its current location, pass a negative integer
+ * to `ptr`.
+ *
+ * \param fp The file pointer.
+ * \param ptr The location of the frame to read, or a negative value to
+ * read the next frame in the stream.
+ * \param frm Will be populated with the frame data. Must be released
+ * with a call to `freefrm`.
+ */
+OEXTRN struct frm_t* rdfrm(FILE* fp, long ptr);
+
+/**
+ * \brief Free the memory held by the frame structure.
+ *
+ * \param frm The frame to free. Can be NULL (no op).
+ */
+OEXTRN void freefrm(struct frm_t* frm);
+
+/**
+ * \brief Calculate the force and first time derivative from
+ * the galaxy particle according to Irrgang et al. 2013.
+ *
+ * \param hdr A frame header.
+ * \param fp A 3-vector to be populated with the force.
+ * \param fdp A 3-vector to be populated with the first time derivative of
+ * the force.
+ */
+OEXTRN void forceir13(const struct frm_hdr_t* hdr,
+                      const double rg[3], const double vg[3],
+                      double fp[3], double fd[3]);
 
 
 /**
- * \brief Read each particle in the frame.
+ * \brief Find the tidal radius from circular angular velocity.
  *
- * The `cb` callback will be passed the following, in order:
- * 1. The total number of particles in the frame.
- * 2. The total number of header values.
- * 3. A struct containing the header values.
- * 4. The particle's components, in the order: mass, position*3, velocity*3.
- * 7. Arbitrary data passed to this function.
- *
- * Return false from the callback to stop iterating.
- *
- * \param fp The file handle.
- * \param ptr The position in the stream containing the frame of interest.
- * Pass a negative number to use the current position of the file.
- * \param cb The function to call with particle data.
- * \param dat Any arbitrary data to pass to the callback.
+ * \param omega Circular angular velocity.
+ * \return The tidal radius.
  */
-OEXTRN void itrprt(FILE* fp, long ptr, fn_frmrdr_t cb, void* dat);
+OEXTRN double rtide(double omega);
 
 #ifdef __cplusplus
 }

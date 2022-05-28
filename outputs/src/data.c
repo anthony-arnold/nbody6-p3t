@@ -3,8 +3,8 @@
 
 #include "oerrno.h"
 
-bool _data (FILE* fp, double ptcl[7]) {
-    if (fread(ptcl, sizeof(double), 7, fp) != 7) {
+bool _data (FILE* fp, size_t n, double* out) {
+    if (fread(out, sizeof(double), n, fp) != n) {
         if (feof(fp)) {
             _oseterrno(OERR_FRAME_TRUNC);
         }

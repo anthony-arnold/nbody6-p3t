@@ -4,6 +4,6 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-bool _data (FILE* fp, double ptcl[7]);
+bool _data(FILE* fp, size_t n, double* out);
 
 #endif

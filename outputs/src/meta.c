@@ -7,12 +7,12 @@ extern bool ofail();
 
 bool _meta(FILE* fp, int* ntot, int* nk) {
     char meta[16];
-    int len;
+    int len = 0;
 
     /* Read the meta data */
     if (_readrec(fp, meta, sizeof(meta), &len) < 0) {
         /* If the buffer isn't big enough, that's a major problem. */
-        if (!ofail() && (size_t)len > sizeof(meta)) {
+        if (!ofail() && len > (int)sizeof(meta)) {
             _oseterrno(OERR_FORMAT);
         }
         return false;
