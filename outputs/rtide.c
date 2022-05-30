@@ -27,7 +27,7 @@ double find_rt(const struct frm_t* frame, double mass) {
     double r2 = mag2(r);
     double m = sqrt(mag2(fx)) * r2;
     double vc = sqrt(m / sqrt(r2));
-    double rt = cbrt(mass / 2 * vc*vc) * pow(sqrt(mag2(frame->hdr->rgal)), 2.0/3.0);
+    double rt = cbrt(mass / (2.0 * vc*vc)) * pow(sqrt(mag2(frame->hdr->rgal)), 2.0/3.0);
 
     return rt;
 }
