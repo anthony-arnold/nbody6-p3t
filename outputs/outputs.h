@@ -256,12 +256,34 @@ OEXTRN void forceir13(const struct frm_hdr_t* hdr,
 
 
 /**
- * \brief Find the tidal radius from circular angular velocity.
+ * \brief Find the tidal radius of an isothermal sphere.
  *
- * \param omega Circular angular velocity.
+ * \param hdr A frame header with rgal, vgal and rdens.
+ * \param mass The total cluster mass.
  * \return The tidal radius.
  */
-OEXTRN double rtide(double omega);
+OEXTRN double rtide(const struct frm_hdr_t* hdr, double mass);
+
+
+/**
+ * \brief Find the total mass of a frame, in NBODY units.
+ *
+ * \param frame A frame.
+ * \return The total cluster mass.
+ */
+OEXTRN double clmass(const struct frm_t* frame);
+
+
+/**
+ * \brief Find the bound mass/star ratio of a frame.
+ *
+ * \param frame A frame.
+ * \param boundm Will contain the bound mass ratio.
+ * \param boundn Will contain the bound star ratio.
+ * \param rt Will contain the tidal radius.
+ */
+OEXTRN void bound(const struct frm_t* frame, double* boundm, double* boundn,
+                  double *rt);
 
 #ifdef __cplusplus
 }

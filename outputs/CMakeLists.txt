@@ -7,6 +7,8 @@ add_compile_options(-std=c11 -pedantic -Wall -Wextra -Werror -pedantic-errors)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_library(outputs
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/bound.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/clmass.c
   ${CMAKE_CURRENT_SOURCE_DIR}/src/data.c
   ${CMAKE_CURRENT_SOURCE_DIR}/src/discard.c
   ${CMAKE_CURRENT_SOURCE_DIR}/src/dot.c
