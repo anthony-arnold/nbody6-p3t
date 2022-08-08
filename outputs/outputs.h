@@ -87,16 +87,16 @@ struct frm_hdr_t {
              */
             double vgal[3];
 
-            double empty[6];
-
             /**
              * The cluster density center velocity.
              */
             double dvr[3];
 
             double kz19;
+
+            double empty[6];
         };
-        double as[30];
+        double as[36];
     };
 };
 

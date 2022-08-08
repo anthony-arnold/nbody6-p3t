@@ -3,6 +3,7 @@ project(outputs)
 
 enable_language(C)
 add_compile_options(-std=c11 -pedantic -Wall -Wextra -Werror -pedantic-errors)
+find_package(OpenMP)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -33,7 +34,8 @@ add_library(outputs
   ${CMAKE_CURRENT_SOURCE_DIR}/src/readrec.c
   ${CMAKE_CURRENT_SOURCE_DIR}/src/rtide.c
   ${CMAKE_CURRENT_SOURCE_DIR}/src/skpfrm.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/vsub.c)
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/vsub.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/cross.c)
 target_link_libraries(outputs m)
 
 add_executable(count_frames
@@ -52,3 +54,9 @@ target_link_libraries(rtide outputs)
 add_executable(boundm
   ${CMAKE_CURRENT_SOURCE_DIR}/boundm.c)
 target_link_libraries(boundm outputs)
+
+if (OpenMP_FOUND)
+add_executable(wav
+  ${CMAKE_CURRENT_SOURCE_DIR}/wav.c)
+target_link_libraries(wav PUBLIC outputs OpenMP::OpenMP_C)
+endif()
