@@ -138,7 +138,7 @@
 *
 *       Obtain the total kinetic & potential energy.
    52 CALL ENERGY2
- 
+
 *       Check option for astrophysical units.
       if (KZ(22).EQ.-1) then
 *       Save K.E. and P.E. of C.Ms for TCR & TRH (units of M_sun, pc & km/s).
@@ -211,11 +211,11 @@
 *       Scale non-zero velocities by virial theorem ratio.
           IF (ZKIN.GT.0.0D0) THEN
               QV = SQRT(Q*VIR/ZKIN)
-c             DO 60 I = 1,N
-c                 DO 58 K = 1,3
-c                     XDOT(K,I) = XDOT(K,I)*QV
-c  58             CONTINUE
-c  60         CONTINUE
+             DO 60 I = 1,N
+                 DO 58 K = 1,3
+                     XDOT(K,I) = XDOT(K,I)*QV
+  58             CONTINUE
+  60         CONTINUE
           ELSE
               QV = 1.0
           END IF
@@ -339,7 +339,7 @@ c         POT = POT*SX
    77     CONTINUE
       END IF
 *
-*       Check whether to include rotation (VXROT = 0 in standard case). 
+*       Check whether to include rotation (VXROT = 0 in standard case).
       IF (VXROT.GT.0.0D0) THEN
 *
 *       Set angular velocity for retrograde motion (i.e. star clusters).
