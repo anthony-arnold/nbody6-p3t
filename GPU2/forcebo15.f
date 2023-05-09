@@ -11,7 +11,8 @@ c     implicit none
       parameter(mb=5.0E9, rhobm=-1.8d0, bulgecut=1900.d0, m2=6.8E10,
      *  a2=3000.d0, b2=280.d0, rhodm=7.1111E-3, rsdm=16000.d0)
       real*8 f1(3),f2(3),f3(3),fd1(3),fd2(3),fd3(3)
-      real*8 r,mbulge,mhalo,mhalo2,dis3,dis5,xf
+      real*8 r,mhalo2,dis3,dis5,xf
+c      real*8 mbulge,mhalo
 
 c     a+b parameters in pc, m parameters in Msun
       ru(1) = rp(1)*rbar
