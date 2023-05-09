@@ -33,6 +33,33 @@ c Set tidal radius to large value
      &                                "  VG = ",3E10.2)
           goto 200
       END IF
+*
+      IF (KZ(14).EQ.6) THEN
+          READ (5,*) (RG(K),K=1,3),(VG(K),K=1,3)
+*
+*       Convert from pc and km/sec to N-body units.
+          DO K = 1,3
+              RG(K) = RG(K)/RBAR
+              VG(K) = VG(K)/VSTAR
+          END DO
+          WRITE (6,'(a/)') "Galaxy model: Bovy (2015) !"
+          READ (5,*) RFIN(1),RFIN(2),RFIN(3)
+          WRITE (6,'(a,3(f7.2,a)/)')
+     *   "Stopping simulation when cluster is at x/y/x=",rfin(1),
+     *       "  ",rfin(2),"  ",rfin(3)
+*
+*       Initialize F & FDOT of reference frame (point-mass galaxy is OK).
+          CALL GCINIT
+*
+c Set tidal radius to large value
+          RTIDE = 1.E5
+          RTIDE0 = RTIDE
+          WRITE (6,175)  (RG(K),K=1,3), (VG(K),K=1,3)
+  175     FORMAT ("SCALED ORBIT:    RG =",1P,3E10.2,
+     &                                "  VG = ",3E10.2)
+          goto 200
+      END IF
+
 
 *       Check option for cluster in circular galactic orbit.
       IF (KZ(14).NE.1) GO TO 20

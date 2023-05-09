@@ -102,7 +102,7 @@
    50     CONTINUE
       END IF
 
-*      Irrgang 2013 Galaxy model 
+*      Irrgang 2013 Galaxy model
       IF (KZ(14).EQ.5.AND.KCASE.GT.0) THEN
 c calculate force due to accelerated coordinate system
           CALL FORCEIR13(RG,VG,FS,FSD)
@@ -114,6 +114,23 @@ c calculate galactic centre force
    15     CONTINUE
           CALL FORCEIR13(XG,XGDOT,FM,FMD)
 
+          DO K = 1,3
+            FREG(K) = FREG(K) + (FS(K) - FM(K))
+            FDR(K) = FDR(K) + (FSD(K) - FMD(K))
+          END DO
+      END IF
+*
+*      Bovy 2015 Galaxy model
+      IF (KZ(14).EQ.6.AND.KCASE.GT.0) THEN
+c calculate force due to accelerated coordinate system
+          CALL FORCEBO15(RG,VG,FS,FSD)
+
+c calculate galactic centre force
+          DO K = 1,3
+              XG(K) = RG(K) - XI(K)
+              XGDOT(K) = VG(K) - XIDOT(K)
+          END DO
+          CALL FORCEBO15(XG,XGDOT,FM,FMD)
           DO K = 1,3
             FREG(K) = FREG(K) + (FS(K) - FM(K))
             FDR(K) = FDR(K) + (FSD(K) - FMD(K))

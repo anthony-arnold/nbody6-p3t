@@ -16,6 +16,10 @@
       If (KZ(14).EQ.5 .and. tg.eq.0.d0) then
          call forceir13 (rg, vg, fg, fgd)
       end if
+      IF (KZ(14).EQ.6 .and. tg.eq.0.d0) THEN
+         call forcebo15 (rg, vg, fm, fd)
+      END IF
+
       DT = DTGC
 
 *       Note: integration step may exceed STEPX (depends on block-step).
@@ -72,7 +76,11 @@
 
       IF (KZ(14).EQ.5) THEN
           call forceir13 (rg, vg, fm, fd)
-      END IF
+       END IF
+       IF (KZ(14).EQ.6) THEN
+          call forcebo15 (rg, vg, fm, fd)
+       END IF
+
 *
 *       Set time factors for corrector.
       DT13 = ONE3*DT

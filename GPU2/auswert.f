@@ -387,10 +387,14 @@ c -------------------------------------------------------------------------
         find_rt = (mcl/(3.0*gmg))**(1.0/3.0)*rgal
       else if (gmpar.eq.3) then
         find_rt = (mcl/(2.d0*vcirc**2.0))**(1.0/3.0)*rgal**(2.0/3.0)
-      else if (gmpar.eq.5) then
+      else if (gmpar.eq.5 .or. gmpar.eq.6) then
          find_rt = 0.d0
          ffa = 0.d0
-         CALL FORCEIR13(RG,VG,FS,FSD)
+         if (gmpar.eq.5) then
+            CALL FORCEIR13(RG,VG,FS,FSD)
+         else
+            CALL FORCEBO15(RG,VG,FS,FSD)
+         endif
          xg(2) = rg(2)
          xg(3) = rg(3)
          vrad=(vg(1)*rg(1)+vg(2)*rg(2)+vg(3)*rg(3))
@@ -401,7 +405,11 @@ c -------------------------------------------------------------------------
             do i=1,10000
               dcl=0.05*i
               xg(1)=rg(1)+dcl
-              CALL FORCEIR13(RG,VG,FM,FMD)
+              if (gmpar.eq.5) then
+                 CALL FORCEIR13(RG,VG,FM,FMD)
+              else
+                 CALL FORCEBO15(RG,VG,FM,FMD)
+              endif
               ff=fm(1)-fs(1)+omg**2.0*dcl-mcl/dcl**2.0
               if (ffa.le.0.d0.and.ff.gt.0.d0) then
                 find_rt = dcl
