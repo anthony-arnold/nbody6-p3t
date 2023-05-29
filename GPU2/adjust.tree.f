@@ -504,6 +504,9 @@ c          TIME = TNEXT/TSTAR
       if (kz(14).eq.5) then
          call orb_energchk_irr13(rg, vg) ! Check galactic center position for IR13 model
       end if
+      if (kz(14).eq.6) then
+         call orb_energchk_bo15(rg, vg) ! Check galactic center position for Bovey15 model
+      end if
 
       RETURN
 *
