@@ -73,9 +73,12 @@
  9    FORMAT(//,12X,'ABUNDANCES: X =',F6.3,' Y =',F6.3,' Z =',F6.3)
 *NB6  zpars(11)=xhyd
 *     zpars(12)=yhel
-*
-*       Calculate scale factor for spin angular momentum.
-      SPNFAC = ZMBAR*SU**2/(1.0D+06*TSTAR)
+**       Calculate scale factor for spin angular momentum.
+      if (kz(19).eq.5) then
+        SPNFAC = 1.0
+      else
+        SPNFAC = ZMBAR*SU**2/(1.0D+06*TSTAR)
+      end if
 *
 *       Define index locations for possible BHs with primordial binaries.
       IB1 = 1
@@ -119,7 +122,7 @@
           CALL hrdiag(M0,AGE,M1,TM,TN,TSCLS,LUMS,GB,ZPARS,
      &                RM,LUM,KW,MC,RCC,MENV,RENV,K2)
 *
-*       Assign initial spin angular momentum. 
+*       Assign initial spin angular momentum.
           IF(KZ(22).EQ.3)THEN
              JSPIN = (K2*(M1-MC)*RM**2 + K3*MC*RCC**2)*OSPIN
           ELSE

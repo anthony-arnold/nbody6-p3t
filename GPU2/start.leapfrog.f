@@ -18,6 +18,14 @@
 *       Set initial conditions: BODY(I), X(K,I), XDOT(K,I); I=1,N & K=1,3.
       CALL DATA
 *
+*       Special evolution code
+      if (kz(19).eq.5) then
+         zmbar = zmbar*n
+         call instar
+         call evolve_mf
+      end if
+
+*
 *       Scale initial conditions to new units.
       CALL SCALE
 *
@@ -77,16 +85,38 @@
 *       Create table of inverse Stumpff coefficients.
       DO 30 I = 1,NS
           SCOEFF(I) = 1.0D0/((I + 1)*(I + 2))
-   30 CONTINUE
+ 30    CONTINUE
 *
 *       Set optional stellar evolution parameters or define STEPX.
-      IF (KZ(19).GT.2) THEN
-          CALL INSTAR
-      ELSE IF (KZ(14).GT.1) THEN
-          DT = 1.0E-03/TSTAR
-          CALL STEPK(DT,DTN)
-          STEPX = DTN
-      END IF
+      IF (KZ(19).EQ.5) THEN
+        kz(19)=4
+        toff = toff/tstar
+        DT = 1.0d-04/TSCALE
+        CALL STEPK(DT,DTN)
+        IF(DTN*TSCALE.LT.100.0) DTN = 2.d0*DTN
+        STEPX = DTN
+        TMDOT = STEPX
+c convert TEV values from Myr to NBODY units and subtract TOFF
+         do i=1,n
+           TEV(I)  = TEV(I)/TSTAR-TOFF
+           TEV0(I) = TEV0(I)/TSTAR-TOFF
+           EPOCH(I) = EPOCH(I)-TOFF*TSTAR
+         end do
+c set gal. cent. time step to toff
+         if (KZ(14).gt.0) TG=TOFF
+         SPNFAC = ZMBAR*SU**2/(1.0D+06*TSTAR)
+      ELSE
+
+*
+*     Set optional stellar evolution parameters or define STEPX.
+         IF (KZ(19).GT.2) THEN
+            CALL INSTAR
+         ELSE IF (KZ(14).GT.1) THEN
+            DT = 1.0E-03/TSTAR
+            CALL STEPK(DT,DTN)
+            STEPX = DTN
+         END IF
+ENDIF
 *
 *       Initialize optional cloud parameters.
       IF (KZ(13).GT.0) THEN
