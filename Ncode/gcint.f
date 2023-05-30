@@ -12,6 +12,9 @@
       parameter (DTGC=0.000244140625)  ! 1/4096
 *
 *
+      WRITE(*,*) TG,TIME+TOFF,(VG(K),K=1,3),(RG(K),K=1,3)
+      WRITE(*,*) (FGD(K),K=1,3),(FG(K),K=1,3)
+      STOP
 *       Predict coordinates and velocities to order FDOT.
       If (KZ(14).EQ.5 .and. tg.eq.0.d0) then
          call forceir13 (rg, vg, fg, fgd)
@@ -111,7 +114,7 @@
       if (tg.lt.time+toff) goto 100
 
 c Check for end condition
-      IF (KZ(14).EQ.5.and.(time+toff)*tstar-tcrit.gt.-30.d0) THEN
+      IF (KZ(14).GE.5.and.(time+toff)*tstar-tcrit.gt.-30.d0) THEN
           call checkend (rg, vg)
       END IF
 *
