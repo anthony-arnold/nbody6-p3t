@@ -17,7 +17,7 @@
          call forceir13 (rg, vg, fg, fgd)
       end if
       IF (KZ(14).EQ.6 .and. tg.eq.0.d0) THEN
-         call forcebo15 (rg, vg, fm, fd)
+         call forcebo15 (rg, vg, fg, fgd)
       END IF
 
       DT = DTGC
@@ -111,7 +111,7 @@
       if (tg.lt.time+toff) goto 100
 
 c Check for end condition
-      IF (KZ(14).EQ.5.and.(time+toff)*tstar-tcrit.gt.-30.d0) THEN
+      IF (KZ(14).GE.5.and.(time+toff)*tstar-tcrit.gt.-30.d0) THEN
           call checkend (rg, vg)
       END IF
 *
