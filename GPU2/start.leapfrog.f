@@ -116,7 +116,7 @@ c set gal. cent. time step to toff
             CALL STEPK(DT,DTN)
             STEPX = DTN
          END IF
-ENDIF
+      ENDIF
 *
 *       Initialize optional cloud parameters.
       IF (KZ(13).GT.0) THEN
