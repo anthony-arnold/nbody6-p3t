@@ -105,10 +105,10 @@
 *               IF(M0.LE.0.01D0) KW = 10
                 IF (KZ(45).GT.0.AND.M0.GT.9.99.AND.
      &          (NAME(I).EQ.IB1.OR.NAME(I).EQ.IB2)) KW = 14
-      IF (M1.GT.10.0) WRITE (6,666)  KW, NAME(I)
-  666 FORMAT (' CATCH   KW NAM ',2I5)
-      IF (NAME(I).LT.10) WRITE (6,665) I, NAME(I), M1
-  665 FORMAT (' HELLO!   I NM M ',2I5,F7.2)
+c      IF (M1.GT.10.0) WRITE (6,666)  KW, NAME(I)
+c  666 FORMAT (' CATCH   KW NAM ',2I5)
+c      IF (NAME(I).LT.10) WRITE (6,665) I, NAME(I), M1
+c  665 FORMAT (' HELLO!   I NM M ',2I5,F7.2)
              ENDIF
           ENDIF
           MC = 0.D0

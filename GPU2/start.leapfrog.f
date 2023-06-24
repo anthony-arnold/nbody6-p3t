@@ -37,7 +37,7 @@
 *
 *       Define mean mass in scaled units and solar mass conversion factor.
       BODYM = ZMASS/FLOAT(N)
-      IF (KZ(5).NE.3) THEN
+      IF (KZ(5).NE.3.and.kz(19).ne.5) THEN
           ZMBAR = ZMBAR/BODYM
       END IF
 *
