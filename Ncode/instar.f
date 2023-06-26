@@ -70,7 +70,7 @@
 *     END IF
 *
       WRITE (6,9)  ZPARS(11), ZPARS(12), ZMET
- 9    FORMAT(//,12X,'ABUNDANCES: X =',F6.3,' Y =',F6.3,' Z =',F6.3)
+ 9    FORMAT(//,12X,'ABUNDANCES: X =',F6.3,' Y =',F6.3,' Z =',F7.4)
 *NB6  zpars(11)=xhyd
 *     zpars(12)=yhel
 **       Calculate scale factor for spin angular momentum.

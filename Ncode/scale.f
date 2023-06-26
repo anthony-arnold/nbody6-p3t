@@ -211,11 +211,11 @@
 *       Scale non-zero velocities by virial theorem ratio.
           IF (ZKIN.GT.0.0D0) THEN
               QV = SQRT(Q*VIR/ZKIN)
-              DO 60 I = 1,N
-                  DO 58 K = 1,3
-                      XDOT(K,I) = XDOT(K,I)*QV
-   58             CONTINUE
-   60         CONTINUE
+c              DO 60 I = 1,N
+c                  DO 58 K = 1,3
+c                      XDOT(K,I) = XDOT(K,I)*QV
+c   58             CONTINUE
+c   60         CONTINUE
           ELSE
               QV = 1.0
           END IF
@@ -345,7 +345,7 @@
    77     CONTINUE
       END IF
 *
-*       Check whether to include rotation (VXROT = 0 in standard case). 
+*       Check whether to include rotation (VXROT = 0 in standard case).
       IF (VXROT.GT.0.0D0) THEN
 *
 *       Set angular velocity for retrograde motion (i.e. star clusters).
