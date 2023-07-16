@@ -15,6 +15,7 @@
       CALL STOPWATCH(TBEG)
       WRITE (6,100) TIME, TBEG
  100  FORMAT (/,' PRE-ADJUST:  TIME =',F8.2,' WTIME =',E11.3)
+      WRITE(*,*) 'BODY 1', BODY(1)
 *
 *       Predict X & XDOT for all particles (except unperturbed pairs).
       CALL XVPRED(IFIRST,NTOT)
@@ -496,6 +497,7 @@ c          TIME = TNEXT/TSTAR
       WRITE (6,101) TIME, TEND
  101  FORMAT (/,' POST-ADJUST:  TIME =',F8.2,' WTIME =',E11.3)
       FLUSH(6)
+      WRITE(*,*) 'BODY 1', BODY(1)
 
       if (kz(14).gt.2) then
          write (*,*) "GC ",(time+toff)*tstar,rg(1)*rbar,

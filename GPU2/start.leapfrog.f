@@ -18,13 +18,14 @@
 *       Set initial conditions: BODY(I), X(K,I), XDOT(K,I); I=1,N & K=1,3.
       CALL DATA
 *
+      WRITE(*,*) 'BODY 1 START', BODY(1)
 *       Special evolution code
       if (kz(19).eq.5) then
          zmbar = zmbar*n
          call instar
          call evolve_mf
       end if
-
+      WRITE(*,*) 'BODY 1 EVOLVE', BODY(1)
 *
 *       Scale initial conditions to new units.
       CALL SCALE
@@ -124,8 +125,10 @@ c set gal. cent. time step to toff
       END IF
 *
 *       Perform fast initialization on GPU.
+      WRITE(*,*) 'BODY 1 SHUFFLED', BODY(1)
       RS0 = RC
       CALL FPOLY0(RS0)
+      WRITE(*,*) 'BODY 1 FPOLY', BODY(1)
 *
 *       Check the average neighbour number.
  80   NNB0 = 0
