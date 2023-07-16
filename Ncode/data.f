@@ -43,6 +43,7 @@
           DO 5 I = 1,N
               READ (10,*)  BODY(I), (X(K,I),K=1,3), (XDOT(K,I),K=1,3)
               ZMASS = ZMASS + BODY(I)
+              NAME(I) = I
     5     CONTINUE
 *       Include possibility of a new IMF via option #20.
           IF (KZ(22).GE.2.OR.KZ(22).EQ.-1) GO TO 50
