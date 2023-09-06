@@ -1,13 +1,15 @@
       SUBROUTINE ZERO
 *
 *
-*       Initialization of global scalars. 
+*       Initialization of global scalars.
 *       ---------------------------------
 *
       INCLUDE 'common6.h'
 *
 *
 *       Initialize parameters & counters and set useful constants.
+      L0_ORB = 0.d0
+      V0_ORB = 0.d0
       TIME = 0.0D0
       TOFF = 0.0D0
       TTOT = 0.0D0

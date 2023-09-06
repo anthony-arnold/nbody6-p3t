@@ -151,7 +151,7 @@ c halo
       lz = ru(1)*vu(2)-ru(2)*vu(1)
       ltot = sqrt(lx**2+ly**2+lz**2)
 
-      if (time+toff.eq.0.d0) then
+      if (v0_orb.eq.0.d0) then
          e0_orb=etot
          v0_orb=vg
          l0_orb=lz
