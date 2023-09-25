@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
                 mass += frame->ptcls[i].m;
             }
 
-            printf("%lf   %lf   %lf   %lf",
+            printf("%lf   %lf   %lf   %lf\n",
                    frame->hdr->t * frame->hdr->tscale,
                    frame->hdr->rbar,
                    mass,
