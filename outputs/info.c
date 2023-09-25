@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
             printf("%lf   %lf   %lf   %lf\n",
                    frame->hdr->t * frame->hdr->tscale,
                    frame->hdr->rbar,
-                   mass,
+                   mass * frame->hdr->zmbar,
                    frame->hdr->vstar);
 
             freefrm(frame);
