@@ -59,6 +59,10 @@ add_executable(info
   ${CMAKE_CURRENT_SOURCE_DIR}/info.c)
 target_link_libraries(info outputs)
 
+add_executable(orbit
+  ${CMAKE_CURRENT_SOURCE_DIR}/orbit.c)
+target_link_libraries(orbit outputs)
+
 
 if (OpenMP_FOUND)
 add_executable(wav
