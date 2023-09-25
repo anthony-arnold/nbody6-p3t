@@ -15,7 +15,12 @@
           RIN2 = 1.0/(RG(1)**2 + RG(2)**2 + RG(3)**2)
           RIN3 = RIN2*SQRT(RIN2)
           RGVG = 3.0*(RG(1)*VG(1) + RG(2)*VG(2) + RG(3)*VG(3))*RIN2
-
+*
+          DO 1 K = 1,3
+              FG(K) = -GMG*RG(K)*RIN3
+              FGD(K) = -GMG*(VG(K) - RGVG*RG(K))*RIN3
+    1     CONTINUE
+      ELSE
          IF (KZ(14).EQ.5) then
             CALL FORCEIR13(RG,VG,FG,FGD)
             GOTO 999
@@ -26,12 +31,6 @@
             GOTO 999
          END IF
 
-*
-          DO 1 K = 1,3
-              FG(K) = -GMG*RG(K)*RIN3
-              FGD(K) = -GMG*(VG(K) - RGVG*RG(K))*RIN3
-    1     CONTINUE
-      ELSE
           DO 5 K = 1,3
               FG(K) = 0.0
               FGD(K) = 0.0
