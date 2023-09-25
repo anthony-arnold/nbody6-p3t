@@ -24,6 +24,7 @@
          zmbar = zmbar*n
          call instar
          call evolve_mf
+         ttot = time + toff
       end if
 *
 *       Scale initial conditions to new units.
