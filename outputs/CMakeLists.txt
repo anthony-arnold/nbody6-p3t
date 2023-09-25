@@ -55,6 +55,11 @@ add_executable(boundm
   ${CMAKE_CURRENT_SOURCE_DIR}/boundm.c)
 target_link_libraries(boundm outputs)
 
+add_executable(info
+  ${CMAKE_CURRENT_SOURCE_DIR}/info.c)
+target_link_libraries(info outputs)
+
+
 if (OpenMP_FOUND)
 add_executable(wav
   ${CMAKE_CURRENT_SOURCE_DIR}/wav.c)
