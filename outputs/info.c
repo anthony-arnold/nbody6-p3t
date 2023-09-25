@@ -20,6 +20,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    printf("T     R*   <M>   V*\n");
     while (!feof(fp)) {
         double mass = 0;
         struct frm_t* frame = rdfrm(fp, -1);
@@ -27,7 +28,6 @@ int main(int argc, char* argv[]) {
             fprintf(stderr, "%s\n", oerror());
             return 1;
         }
-        printf("T     R*   <M>   V*\n");
         if (frame) {
             for (int i = 0; i < frame->ntot; i++) {
                 mass += frame->ptcls[i].m;
