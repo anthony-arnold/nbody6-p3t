@@ -10,6 +10,17 @@
       REAL*8  FD(3),FDD(3)
 *
 *
+      IF (KZ(14).EQ.5) then
+         WRITE(*,*) "Init force Irrgang"
+         CALL FORCEIR13(RG,VG,FG,FGD)
+         GOTO 999
+      END IF
+
+      IF (KZ(14).EQ.6) then
+         WRITE(*,*) "Init force Bovy"
+         CALL FORCEBO15(RG,VG,FG,FGD)
+         GOTO 999
+      END IF
 *       Obtain initial force and first derivative from point-mass galaxy.
       IF (GMG.GT.0.0D0) THEN
           RIN2 = 1.0/(RG(1)**2 + RG(2)**2 + RG(3)**2)
@@ -21,15 +32,6 @@
               FGD(K) = -GMG*(VG(K) - RGVG*RG(K))*RIN3
     1     CONTINUE
       ELSE
-         IF (KZ(14).EQ.5) then
-            CALL FORCEIR13(RG,VG,FG,FGD)
-            GOTO 999
-         END IF
-
-         IF (KZ(14).EQ.6) then
-            CALL FORCEBO15(RG,VG,FG,FGD)
-            GOTO 999
-         END IF
 
           DO 5 K = 1,3
               FG(K) = 0.0

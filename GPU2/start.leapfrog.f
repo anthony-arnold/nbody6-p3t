@@ -5,6 +5,8 @@
 *       ------------------------------------
 *
       INCLUDE 'common6.h'
+      COMMON/GALAXY/ GMG,RG(3),VG(3),FG(3),FGD(3),TG,OMEGA,
+     &       MBULGE,RBULGE,MDISK,SCALEA,SCALEB,MHALO,RHALO,VCIRC
       EXTERNAL SCALE,MERGE
       PARAMETER  (NS=12)
 *
