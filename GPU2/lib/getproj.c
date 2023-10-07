@@ -355,6 +355,11 @@ void show_data(char *fnameu) {
   fread(bla,8,3*ntot,dat);   // Velocities
   fread(bla,4,ntot,dat);     // Names
 
+  if (as[29] != 0) {
+      // KZ(19) > 0
+      fread(bla, 4, 3*ntot, dat);
+  }
+
   discard_len(dat); // Read 2nd record length of 2nd record
  } while (!feof(dat));
 }
@@ -371,6 +376,7 @@ void read_data(char *fnameu, char *tsnaps) {
  double xbuf[3],rgal[3],vgal[3];
  double xx;
  double *xc,*yc,*zc,*uc,*vc,*wc;
+ float *lsev, *rsev;
 
  xc = malloc(NMAX*sizeof(double));
  yc = malloc(NMAX*sizeof(double));
@@ -382,6 +388,8 @@ void read_data(char *fnameu, char *tsnaps) {
 
  name=malloc(NMAX*sizeof(int));
  kstar=malloc(NMAX*sizeof(int));
+ lsev=malloc(NMAX*sizeof(float));
+ rsev=malloc(NMAX*sizeof(float));
 
  mass=malloc(NMAX*sizeof(double));
 
@@ -433,6 +441,12 @@ void read_data(char *fnameu, char *tsnaps) {
 
     fread(name,4,ntot,dat);     // Names
 
+    if (as[29] != 0) {
+        // KZ(19) > 0
+        fread(kstar, 4, ntot, dat);
+        fread(lsev, 4, ntot, dat);
+        fread(rsev, 4, ntot, dat);
+    }
 
     discard_len(dat);  // Read 2nd record length of 2nd record
     tmyr = as[0] * as[10];
