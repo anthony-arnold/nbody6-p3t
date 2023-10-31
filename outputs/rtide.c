@@ -12,14 +12,15 @@
 
 //static const double G = 6.6743e-08;
 
-double find_rt(const struct frm_t* frame, double mass) {
+double find_rt(const struct frm_t* frame, const char* galmodel, double mass) {
     /* Find external force. */
     double fx[3], fdx[3];
-    forceir13(frame->hdr,
-              frame->hdr->rgal,
-              frame->hdr->vgal,
-              fx,
-              fdx);
+    galforce(frame->hdr,
+             galmodel,
+             frame->hdr->rgal,
+             frame->hdr->vgal,
+             fx,
+             fdx);
 
     /* Find mass and circular velocity corresponding to fx. */
     double r[3];
@@ -33,12 +34,12 @@ double find_rt(const struct frm_t* frame, double mass) {
 }
 
 int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        fprintf(stderr, "Usage: rtide <file>\n");
+    if (argc < 3) {
+        fprintf(stderr, "Usage: rtide [NONE|BOVY|IRRGANG] <file>\n");
         return 1;
     }
 
-    FILE* fp = opnout(argv[1]);
+    FILE* fp = opnout(argv[2]);
     if (ofail()) {
         fprintf(stderr, "%s\n", oerror());
         return 1;
@@ -56,7 +57,7 @@ int main(int argc, char* argv[]) {
                 mass += frame->ptcls[i].m;
             }
 
-            double rt = find_rt(frame, mass);
+            double rt = find_rt(frame, argv[1], mass);
             printf("%lf    %lf [%lf]\n",
                    frame->hdr->t * frame->hdr->tscale,
                    rt,

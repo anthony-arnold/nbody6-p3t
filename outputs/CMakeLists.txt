@@ -35,7 +35,10 @@ add_library(outputs
   ${CMAKE_CURRENT_SOURCE_DIR}/src/rtide.c
   ${CMAKE_CURRENT_SOURCE_DIR}/src/skpfrm.c
   ${CMAKE_CURRENT_SOURCE_DIR}/src/vsub.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/cross.c)
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/cross.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/galforce.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/forcebv15.c
+  )
 target_link_libraries(outputs m)
 
 add_executable(count_frames

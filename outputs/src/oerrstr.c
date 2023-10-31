@@ -11,7 +11,8 @@ static const char* errstrs[OERR_NUM_ERRORS] = {
     "Bad fortran record length",
     "Bad fortran file",
     "Bad parameter value",
-    "Out of memory"
+    "Out of memory",
+    "Invalid galaxy model"
 };
 
 const char* _oerrstr() {

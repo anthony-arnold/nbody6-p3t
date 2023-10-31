@@ -243,26 +243,70 @@ OEXTRN void skpfrm(FILE* fp);
 
 /**
  * \brief Calculate the force and first time derivative from
+ * the galaxy particle according to the specified galaxy model.
+ *
+ * \param hdr A frame header.
+ * \param galmodel Either "BOVY", "IRRGANG", or "NONE" (case-insensitive.)
+ * \param rg The phase space location of the galaxy particle.
+ * \param rg The phase space velocity of the galaxy particle.
+ * \param fp A 3-vector to be populated with the force.
+ * \param fdp A 3-vector to be populated with the first time derivative of
+ * the force.
+ *
+ * \note A galmodel parameter of "NONE" will result in zero force.
+ */
+OEXTRN void galforce(const struct frm_hdr_t* hdr,
+                     const char* galmodel,
+                     const double rg[3],
+                     const double vg[3],
+                     double fp[3],
+                     double fd[3]);
+
+/**
+ * \brief Calculate the force and first time derivative from
  * the galaxy particle according to Irrgang et al. 2013.
  *
  * \param hdr A frame header.
+ * \param rg The phase space location of the galaxy particle.
+ * \param rg The phase space velocity of the galaxy particle.
  * \param fp A 3-vector to be populated with the force.
  * \param fdp A 3-vector to be populated with the first time derivative of
  * the force.
  */
 OEXTRN void forceir13(const struct frm_hdr_t* hdr,
-                      const double rg[3], const double vg[3],
-                      double fp[3], double fd[3]);
+                      const double rg[3],
+                      const double vg[3],
+                      double fp[3],
+                      double fd[3]);
 
+/**
+ * \brief Calculate the force and first time derivative from
+ * the galaxy particle according to Bovy et al. 2015.
+ *
+ * \param hdr A frame header.
+ * \param rg The phase space location of the galaxy particle.
+ * \param rg The phase space velocity of the galaxy particle.
+ * \param fp A 3-vector to be populated with the force.
+ * \param fdp A 3-vector to be populated with the first time derivative of
+ * the force.
+ */
+OEXTRN void forcebv15(const struct frm_hdr_t* hdr,
+                      const double rg[3],
+                      const double vg[3],
+                      double fp[3],
+                      double fd[3]);
 
 /**
  * \brief Find the tidal radius of an isothermal sphere.
  *
  * \param hdr A frame header with rgal, vgal and rdens.
+ * \param galmodel Either "BOVY", "IRRGANG", or "NONE" (case-insensitive.)
  * \param mass The total cluster mass.
  * \return The tidal radius.
  */
-OEXTRN double rtide(const struct frm_hdr_t* hdr, double mass);
+OEXTRN double rtide(const struct frm_hdr_t* hdr,
+                    const char* galmodel,
+                    double mass);
 
 
 /**
@@ -278,11 +322,15 @@ OEXTRN double clmass(const struct frm_t* frame);
  * \brief Find the bound mass/star ratio of a frame.
  *
  * \param frame A frame.
+ * \param galmodel Either "BOVY", "IRRGANG", or "NONE" (case-insensitive.)
  * \param boundm Will contain the bound mass ratio.
  * \param boundn Will contain the bound star ratio.
  * \param rt Will contain the tidal radius.
  */
-OEXTRN void bound(const struct frm_t* frame, double* boundm, double* boundn,
+OEXTRN void bound(const struct frm_t* frame,
+                  const char* galmodel,
+                  double* boundm,
+                  double* boundn,
                   double *rt);
 
 #ifdef __cplusplus

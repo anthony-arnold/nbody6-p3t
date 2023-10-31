@@ -1,14 +1,15 @@
 #include <math.h>
 #include "outputs.h"
 
-double rtide(const struct frm_hdr_t* hdr, double mass) {
+double rtide(const struct frm_hdr_t* hdr, const char* galmodel, double mass) {
     /* Find external force. */
     double fx[3], fdx[3];
-    forceir13(hdr,
-              hdr->rgal,
-              hdr->vgal,
-              fx,
-              fdx);
+    galforce(hdr,
+             galmodel,
+             hdr->rgal,
+             hdr->vgal,
+             fx,
+             fdx);
 
     /* Find mass and circular velocity corresponding to fx. */
     double r[3];

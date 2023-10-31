@@ -13,6 +13,7 @@ typedef enum {
     OERR_FORMAT,
     OERR_PARAM,
     OERR_OOM,
+    OERR_GALMODEL,
 
     /* MUST GO LAST */
     OERR_NUM_ERRORS

@@ -1,7 +1,10 @@
 #include "outputs.h"
 #include "oerrno.h"
 
-void bound(const struct frm_t* frame, double* boundm, double* boundn,
+void bound(const struct frm_t* frame,
+           const char* galmodel,
+           double* boundm,
+           double* boundn,
            double* rt)
 {
     if (!frame || !boundm || !boundn || !rt) {
@@ -10,7 +13,7 @@ void bound(const struct frm_t* frame, double* boundm, double* boundn,
     }
 
     double clm = clmass(frame);
-    *rt = rtide(frame->hdr, clm);
+    *rt = rtide(frame->hdr, galmodel, clm);
     double rt2 = (*rt) * (*rt);
 
     double m = 0.0;

@@ -76,8 +76,10 @@ static void halo(const double ru[3], const double vu[3],
 }
 
 void forceir13(const struct frm_hdr_t* hdr,
-               const double rg[3], const double vg[3],
-               double fp[3], double fd[3])
+               const double rg[3],
+               const double vg[3],
+               double fp[3],
+               double fd[3])
 {
     const double ru[] = {
         rg[0] * hdr->rbar,
