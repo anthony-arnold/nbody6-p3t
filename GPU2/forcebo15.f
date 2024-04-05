@@ -8,8 +8,8 @@ c     implicit none
       include "common6.h"
       real*8 rp(3), vp(3), ru(3), vu(3), fp(3), fdp(3)
       real*8 mb,rhobm,bulgecut,m2,a2,b2,rhodm,rsdm, rv, xd3, xd5
-      parameter(mb=5.0E9, rhobm=-1.8d0, bulgecut=1900.d0, m2=6.8E10,
-     * a2=3000.d0, b2=280.d0, rhodm=7.1111E-3, rsdm=16000.d0)
+      parameter(mb=4.489E9, rhobm=-1.8d0, bulgecut=1900.d0, m2=6.8E10,
+     *  a2=3000.d0, b2=280.d0, rhodm=8.463E-3, rsdm=16000.d0)
       real*8 f1(3),f2(3),f3(3),fd1(3),fd2(3),fd3(3)
       real*8 r,mhalo2,dis3,dis5,xf
 c      real*8 mbulge,mhalo
@@ -114,8 +114,8 @@ c
       include 'common6.h'
       real*8 rp(3), vp(3), phi(3)
       real*8 mb,rhobm,bulgecut,m2,a2,b2,rhodm,rsdm, rv, xd3, xd5
-      parameter(mb=5.0E9, rhobm=-1.8d0, bulgecut=1900.d0, m2=6.8E10,
-     *  a2=3000.d0, b2=280.d0, rhodm=7.1111E-3, rsdm=16000.d0)
+      parameter(mb=4.489E9, rhobm=-1.8d0, bulgecut=1900.d0, m2=6.8E10,
+     *  a2=3000.d0, b2=280.d0, rhodm=8.463E-3, rsdm=16000.d0)
       real*8 lx,ly,lz,ltot,lde, drat2, dgamm
       real*8 ru(3),vu(3)
       real*8 gamrat, G
