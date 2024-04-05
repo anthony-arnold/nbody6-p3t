@@ -2,13 +2,13 @@
 #include <math.h>
 #include "outputs/vmath.h"
 
-static const double mb = 5.0e9;
+static const double mb = 4.489E9;
 static const double rhobm = -1.8e0;
 static const double bulgecut=1900.e0;
 static const double m2=6.8E10;
 static const double a2=3000.e0;
 static const double b2=280.e0;
-static const double rhodm=7.1111E-3;
+static const double rhodm=8.463E-3;
 static const double rsdm=16000.0e0;
 
 static double gammln(double xx) {
