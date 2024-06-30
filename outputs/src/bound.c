@@ -5,16 +5,16 @@ void bound(const struct frm_t* frame,
            const char* galmodel,
            double* boundm,
            double* boundn,
-           double* rt)
+           double* rtptr)
 {
-    if (!frame || !boundm || !boundn || !rt) {
+    if (!frame) {
         _oseterrno(OERR_NULL);
         return;
     }
 
     double clm = clmass(frame);
-    *rt = rtide(frame->hdr, galmodel, clm);
-    double rt2 = (*rt) * (*rt);
+    double rt = rtide(frame->hdr, galmodel, clm);
+    double rt2 = rt*rt;
 
     double m = 0.0;
     int n = 0;
@@ -28,6 +28,13 @@ void bound(const struct frm_t* frame,
         }
     }
 
-    *boundm = m / clm;
-    *boundn = (double)n / (double)frame->ntot;
+    if (boundm) {
+        *boundm = m / clm;
+    }
+    if (boundn) {
+        *boundn = (double)n / (double)frame->ntot;
+    }
+    if (rtptr) {
+        *rtptr = rt;
+    }
 }

@@ -35,6 +35,7 @@ add_library(outputs
   ${CMAKE_CURRENT_SOURCE_DIR}/src/rtide.c
   ${CMAKE_CURRENT_SOURCE_DIR}/src/skpfrm.c
   ${CMAKE_CURRENT_SOURCE_DIR}/src/vsub.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/vmul.c
   ${CMAKE_CURRENT_SOURCE_DIR}/src/cross.c
   ${CMAKE_CURRENT_SOURCE_DIR}/src/galforce.c
   ${CMAKE_CURRENT_SOURCE_DIR}/src/forcebv15.c
@@ -70,6 +71,9 @@ add_executable(run_info
   ${CMAKE_CURRENT_SOURCE_DIR}/run_info.c)
 target_link_libraries(run_info outputs)
 
+add_executable(snapshot
+  ${CMAKE_CURRENT_SOURCE_DIR}/snapshot.c)
+target_link_libraries(snapshot outputs)
 
 if (OpenMP_FOUND)
 add_executable(wav

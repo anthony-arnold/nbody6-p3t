@@ -14,9 +14,10 @@ double mass(struct frm_t* frame) {
     return tot * frame->hdr->zmbar;
 }
 
+
 int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        fprintf(stderr, "Usage: info <file>\n");
+    if (argc < 3) {
+        fprintf(stderr, "Usage: info <file> <galmodel>\n");
         return 1;
     }
 
@@ -42,10 +43,12 @@ int main(int argc, char* argv[]) {
     double m_final = m_init;
     double r_final = r_init;
     double t_final = 0.0;
+    double m_bound = m_init;
     while (!feof(fp)) {
         frame = rdfrm(fp, -1);
         if (frame) {
             m_final = mass(frame);
+            bound(frame, argv[2], &m_bound, NULL, NULL);
             r_final = frame->hdr->rscale * frame->hdr->rbar;
             t_final = frame->hdr->tphys;
             freefrm(frame);
@@ -54,11 +57,13 @@ int main(int argc, char* argv[]) {
     fclose(fp);
 
     // Print the info
-    printf("%6i %0.4lf %0.4lf %0.4lf %0.4lf %0.4lf\n",
+    printf("%6i %d %0.4lf %0.4lf %0.4lf %0.4lf %0.4lf %0.4lf\n",
            n,
+           m_init == m_final,
            m_init,
            r_init,
-           m_final,
+           m_bound,
            r_final,
+           1.0 - m_final / m_init,
            t_final);
 }
