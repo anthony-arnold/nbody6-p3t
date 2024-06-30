@@ -74,9 +74,3 @@ target_link_libraries(run_info outputs)
 add_executable(snapshot
   ${CMAKE_CURRENT_SOURCE_DIR}/snapshot.c)
 target_link_libraries(snapshot outputs)
-
-if (OpenMP_FOUND)
-add_executable(wav
-  ${CMAKE_CURRENT_SOURCE_DIR}/wav.c)
-target_link_libraries(wav PUBLIC outputs OpenMP::OpenMP_C)
-endif()
