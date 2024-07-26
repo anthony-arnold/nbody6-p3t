@@ -333,6 +333,17 @@ OEXTRN void bound(const struct frm_t* frame,
                   double* boundn,
                   double *rt);
 
+/**
+ * \brief Find the cluster center in celestial coordinates.
+ *
+ * \param frame A frame.
+ * \param pra Will contain the cluster right ascension.
+ * \param pdec Will contain the cluster declination.
+ */
+OEXTRN void center(const struct frm_t* frame,
+                   double* pra,
+                   double* pdec);
+
 #ifdef __cplusplus
 }
 #endif

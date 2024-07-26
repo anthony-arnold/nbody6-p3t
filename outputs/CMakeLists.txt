@@ -39,6 +39,7 @@ add_library(outputs
   ${CMAKE_CURRENT_SOURCE_DIR}/src/cross.c
   ${CMAKE_CURRENT_SOURCE_DIR}/src/galforce.c
   ${CMAKE_CURRENT_SOURCE_DIR}/src/forcebv15.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/center.c
   )
 target_link_libraries(outputs m)
 

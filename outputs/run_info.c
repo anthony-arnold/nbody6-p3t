@@ -44,6 +44,8 @@ int main(int argc, char* argv[]) {
     double r_final = r_init;
     double t_final = 0.0;
     double m_bound = m_init;
+    double rafin = 0.0;
+    double decfin = 0.0;
     while (!feof(fp)) {
         frame = rdfrm(fp, -1);
         if (frame) {
@@ -51,13 +53,14 @@ int main(int argc, char* argv[]) {
             bound(frame, argv[2], &m_bound, NULL, NULL);
             r_final = frame->hdr->rscale * frame->hdr->rbar;
             t_final = frame->hdr->tphys;
+            center(frame, &rafin, &decfin);
             freefrm(frame);
         }
     }
     fclose(fp);
 
     // Print the info
-    printf("%6i %d %0.4lf %0.4lf %0.4lf %0.4lf %0.4lf %0.4lf\n",
+    printf("%6i %d %0.4lf %0.4lf %0.4lf %0.4lf %0.4lf %0.4lf %0.4lf %0.4lf\n",
            n,
            m_init == m_final,
            m_init,
@@ -65,5 +68,7 @@ int main(int argc, char* argv[]) {
            m_bound,
            r_final,
            1.0 - m_final / m_init,
-           t_final);
+           t_final,
+           rafin,
+           decfin);
 }
