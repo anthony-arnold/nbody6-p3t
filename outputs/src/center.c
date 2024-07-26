@@ -9,10 +9,23 @@
 #define L0   32.931918/180.0*PI
 #define GCDIST 8178.0    // Gravity collaboration
 
-void get_radecl(const struct particle_t* ptcl, double* pra, double* pdec) {
-    double xst = -(ptcl->x[0] - GCDIST) / 1000.0;
-    double yst = ptcl->x[1] / 1000.0;
-    double zst = ptcl->x[2] / 1000.0;
+void get_radecl(const struct frm_hdr_t* hdr,
+                const struct particle_t* ptcl,
+                double* pra,
+                double* pdec)
+{
+    double rgal[3];
+    for (int i = 0; i < 3; i++) {
+        rgal[i] = hdr->rgal[i] * hdr->rbar;
+    }
+
+    double x = rgal[0] - ptcl->x[0] * hdr->rbar;
+    double y = rgal[1] - ptcl->x[1] * hdr->rbar;
+    double z = rgal[2] - ptcl->x[2] * hdr->rbar;
+
+    double xst = -(x - GCDIST) / 1000.0;
+    double yst = y / 1000.0;
+    double zst = z / 1000.0;
 
     double dis  = sqrt(xst*xst+yst*yst+zst*zst);
     double b = asin(zst/dis);
@@ -69,7 +82,7 @@ void center(const struct frm_t* frame, double* pra, double* pdec) {
     }
 
     for (int i = 0; i < nstar; i++) {
-        get_radecl(&frame->ptcls[i], &rast[i], &decst[i]);
+        get_radecl(frame->hdr, &frame->ptcls[i], &rast[i], &decst[i]);
     }
 
     double ramean  = 0.0;

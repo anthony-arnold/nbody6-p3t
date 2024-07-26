@@ -38,6 +38,7 @@ int main(int argc, char* argv[]) {
     double m_init = mass(frame);
     double r_init = frame->hdr->rscale * frame->hdr->rbar;
     freefrm(frame);
+    frame = NULL;
 
     // Find the final frame
     double m_final = m_init;
@@ -47,14 +48,21 @@ int main(int argc, char* argv[]) {
     double rafin = 0.0;
     double decfin = 0.0;
     while (!feof(fp)) {
-        frame = rdfrm(fp, -1);
-        if (frame) {
+        struct frm_t* tmp = rdfrm(fp, -1);
+        if (!tmp) {
             m_final = mass(frame);
             bound(frame, argv[2], &m_bound, NULL, NULL);
             r_final = frame->hdr->rscale * frame->hdr->rbar;
             t_final = frame->hdr->tphys;
             center(frame, &rafin, &decfin);
             freefrm(frame);
+            break;
+        }
+        else {
+            if (frame) {
+                freefrm(frame);
+            }
+            frame = tmp;
         }
     }
     fclose(fp);
