@@ -75,7 +75,7 @@ void center(const struct frm_t* frame, double* pra, double* pdec) {
     double ramean  = 0.0;
     double decmean = 0.0;
     double weight  = 0.0;
-    int samples = frame->ntot / 10;
+    int samples = frame->ntot / 100;
 
     for (int i = 0; i < samples; i++) {
         for (int j = 0; j  < nstar; j++) {
