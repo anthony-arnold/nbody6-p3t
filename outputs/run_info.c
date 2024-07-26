@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
     fclose(fp);
 
     // Print the info
-    printf("%6i %d %0.4lf %0.4lf %0.4lf %0.4lf %0.4lf %0.4lf %0.4lf %0.4lf\n",
+    printf("%6i %d %0.4lf %0.4lf %0.4lf %0.4lf %0.4lf %0.4lf %0.6lf %0.6lf\n",
            n,
            m_init == m_final,
            m_init,
