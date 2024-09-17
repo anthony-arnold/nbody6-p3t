@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
 project(outputs)
 
 enable_language(C)
@@ -75,3 +75,12 @@ target_link_libraries(run_info outputs)
 add_executable(snapshot
   ${CMAKE_CURRENT_SOURCE_DIR}/snapshot.c)
 target_link_libraries(snapshot outputs)
+
+add_executable(stream
+  ${CMAKE_CURRENT_SOURCE_DIR}/stream.c)
+target_link_libraries(stream outputs)
+
+find_package(OpenMP)
+add_executable(vel
+  ${CMAKE_CURRENT_SOURCE_DIR}/vel.c)
+target_link_libraries(vel outputs OpenMP::OpenMP_C)

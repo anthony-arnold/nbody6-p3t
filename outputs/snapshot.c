@@ -10,16 +10,6 @@
 #include <string.h>
 #include <math.h>
 
-#define PI 3.1415927
-
-#define NMAX  2100000
-
-#define GND  (90-27.128251)/180.0*PI
-#define GNR  (90+192.859481)/180.0*PI
-#define L0   32.931918/180.0*PI
-
-#define GCDIST 8178.0    // Gravity collaboration
-
 void snapshot(const char* prefix, const char* galmodel, const struct frm_t* frame) {
     /* Create the output file name. */
     char snapname[256];

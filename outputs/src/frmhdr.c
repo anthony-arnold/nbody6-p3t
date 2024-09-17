@@ -19,7 +19,6 @@ void frmhdr(FILE* fp, long ptr, int* ntot, int* nk,
         _oseterrno(OERR_NULL);
         return;
     }
-    *hdr = NULL;
 
     if (!_fpstart(fp, ptr)) {
         return;

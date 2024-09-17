@@ -12,9 +12,10 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, "%s\n", oerror());
         return 1;
     }
+
+    struct frm_hdr_t* hdr = NULL;
     while (!feof(fp)) {
         int ntot;
-        struct frm_hdr_t* hdr;
         frmhdr(fp, -1, &ntot, NULL, &hdr);
         if (ofail()) {
             fprintf(stderr, "%s\n", oerror());
@@ -23,8 +24,10 @@ int main(int argc, char* argv[]) {
         if (hdr) {
             double t = hdr->t * hdr->tscale;
             printf("%lf %i\n", t, ntot);
-            free(hdr);
         }
+    }
+    if (hdr) {
+        free(hdr);
     }
 
     fclose(fp);

@@ -10,17 +10,22 @@
 extern bool _fpstart(FILE* fp, long ptr);
 extern bool _hdr(FILE* fp, int nk, struct frm_hdr_t** hdr);
 
-static struct frm_t* alloc(int ntot, struct frm_hdr_t* header) {
+static struct frm_t* alloc(struct frm_t* frame,
+                           int ntot,
+                           struct frm_hdr_t* header)
+{
+
 
     /* Allocate enough space for all the data. */
-    struct frm_t* frame = malloc(sizeof(struct frm_t) +
-                                 sizeof(struct particle_t) * ntot);
-    if (frame == NULL) {
+    struct frm_t* tmp = realloc(frame,
+                                sizeof(struct frm_t) +
+                                sizeof(struct particle_t) * ntot);
+    if (tmp == NULL) {
         _oseterrno(OERR_OOM);
         return NULL;
     }
-    frame->hdr = header;
-    return frame;
+    tmp->hdr = header;
+    return tmp;
 }
 
 static bool mass(FILE* fp, int ntot, struct frm_t* frame) {
@@ -52,11 +57,14 @@ static bool readall(FILE* fp, int ntot, struct frm_t* frame) {
     return mass(fp, ntot, frame) && pos(fp, ntot, frame) && vel(fp, ntot, frame);
 }
 
-static struct frm_t* getfrm(FILE* fp, int ntot, int nk,
-                            struct frm_hdr_t* header) {
+static struct frm_t* getfrm(FILE* fp,
+                            int ntot,
+                            int nk,
+                            struct frm_hdr_t* header,
+                            struct frm_t* old) {
 
     /* Allocate enough space for all the data. */
-    struct frm_t* frame = alloc(ntot, header);
+    struct frm_t* frame = alloc(old, ntot, header);
     if (!frame) {
         free(header);
         return NULL;
@@ -88,10 +96,14 @@ static bool fastforward(FILE* fp, long fstart, long size) {
 }
 
 struct frm_t* rdfrm(FILE* fp, long ptr) {
+    return rdfrm2(fp, ptr, NULL);
+}
+
+struct frm_t* rdfrm2(FILE* fp, long ptr, struct frm_t* frame) {
+
     int ntot, nk;
     long fstart;
-    struct frm_t* frame;
-    struct frm_hdr_t* header;
+    struct frm_hdr_t* header = NULL;
     long size;
 
     /* Clear error flag */
@@ -104,6 +116,10 @@ struct frm_t* rdfrm(FILE* fp, long ptr) {
 
     if (!_fpstart(fp, ptr)) {
         return NULL;
+    }
+
+    if (frame) {
+        header = frame->hdr;
     }
 
     /* Read the frame meta. */
@@ -128,7 +144,7 @@ struct frm_t* rdfrm(FILE* fp, long ptr) {
     assert(size == frmsz(ntot, nk, header->kz19));
 
     /* Allocate enough space for all the data. */
-    frame = getfrm(fp, ntot, nk, header);
+    frame = getfrm(fp, ntot, nk, header, frame);
 
     /* Get to the end of the frame if not already there. */
     if (!fastforward(fp, fstart, size)) {

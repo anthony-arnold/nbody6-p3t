@@ -192,7 +192,8 @@ OEXTRN bool frmmeta(FILE* fp, long* ptr, int* ntot, int* nk);
  * particles contained in the frame.
  * \param nk If not NULL, will be populated with the number of
  * header items contained in the frame.
- * \param hdr Will contain the frame hader. Must be `free`d.
+ * \param hdr Will contain the frame header. Must be `free`d. If pointing to
+ * a non-NULL pointer, the memory will be realloc'd.
  *
  * \return True if the call was successful.
  */
@@ -221,10 +222,25 @@ OEXTRN long frmsz(int ntot, int nk, bool kz19);
  * \param fp The file pointer.
  * \param ptr The location of the frame to read, or a negative value to
  * read the next frame in the stream.
- * \param frm Will be populated with the frame data. Must be released
- * with a call to `freefrm`.
  */
 OEXTRN struct frm_t* rdfrm(FILE* fp, long ptr);
+
+
+/**
+ * \brief Read one frame, re-using the memory in the given frame.
+ * Memory will be realloc'd if required.
+ * To read from the stream at its current location, pass a negative integer
+ * to `ptr`.
+ *
+ * \param fp The file pointer.
+ * \param ptr The location of the frame to read, or a negative value to
+ * read the next frame in the stream.
+ * \param frm Will be populated with the frame data. Must be released
+ * with a call to `freefrm`. Pass NULL to allocate a new frame.
+ * \return The frame filled with data, possibly allocated if frame was NULL.
+ *
+ */
+OEXTRN struct frm_t* rdfrm2(FILE* fp, long ptr, struct frm_t* frame);
 
 /**
  * \brief Free the memory held by the frame structure.

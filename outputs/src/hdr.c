@@ -23,7 +23,7 @@ bool _hdr(FILE* fp, int nk, struct frm_hdr_t** hdr) {
     if (size < sizeof(struct frm_hdr_t)) {
         size = sizeof(struct frm_hdr_t);
     }
-    tmp = malloc(size);
+    tmp = realloc(*hdr, size);
     if (!tmp) {
         _oseterrno(OERR_OOM);
         return false;
