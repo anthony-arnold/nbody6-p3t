@@ -8,8 +8,8 @@ The code forks from the NBODY6 source and is modified to use the [CMake](https:/
 
 If you use this code, please cite the following papers:
 
- - Arnold, Baumgardt & Wang, [Accelerating NBODY6 with a graphics processing unit-enabled Particle-Particle Particle-Tree scheme](https://ui.adsabs.harvard.edu/abs/2022MNRAS.509.2075A/abstract), MNRAS, 509, 2, 2022.
- - Arnold & Baumgardt, [Direct N-body simulations of NGC 6397 and its tidal tails](https://ui.adsabs.harvard.edu/abs/2025arXiv250111806A/abstract), MNRAS, 2025.
+ - Arnold, Baumgardt & Wang, [Accelerating NBODY6 with a graphics processing unit-enabled Particle-Particle Particle-Tree scheme](https://ui.adsabs.harvard.edu/abs/2022MNRAS.509.2075A/abstract), 2022, MNRAS, 509, 2075.
+ - Arnold & Baumgardt, [Direct N-body simulations of NGC 6397 and its tidal tails](https://ui.adsabs.harvard.edu/abs/2025arXiv250111806A/abstract), 2025, MNRAS.
 
 ## Structure
 
