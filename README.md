@@ -4,6 +4,13 @@ This is a version of the [NBODY6](https://people.ast.cam.ac.uk/~sverre/web/pages
 
 The code forks from the NBODY6 source and is modified to use the [CMake](https://cmake.org/) build system.
 
+## Papers
+
+If you use this code, please cite the following papers:
+
+ - Arnold, Baumgardt & Wang, [Accelerating NBODY6 with a graphics processing unit-enabled Particle-Particle Particle-Tree scheme](https://ui.adsabs.harvard.edu/abs/2022MNRAS.509.2075A/abstract), MNRAS, 509, 2, 2022.
+ - Arnold & Baumgardt, [Direct N-body simulations of NGC 6397 and its tidal tails](https://ui.adsabs.harvard.edu/abs/2025arXiv250111806A/abstract), MNRAS, 2025.
+
 ## Structure
 
 The original structure of the code has been retained. Where modifications were required to a Fortran subroutine, a *.tree.f file was created to hold the modified version. Additionally, the [code](https://github.com/treecode/bonsai) for the GPU-enabled tree code [Bonsai](https://arxiv.org/abs/1204.2280) is included in the GPU2/lib directory.
